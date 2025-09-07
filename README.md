@@ -8,6 +8,7 @@ The goal of this project is to share its content, including scripts (R Markdown 
 **Computational & Analytical Skills**
 
 **R**: R Notebooks (.Rmd).
+
 **Python**: Jupyter Notebooks (.ipynb).
 
 **Statistics & Modeling**
