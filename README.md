@@ -17,7 +17,10 @@ This repository contains the final capstone project for the MSc in Bioinformatic
 
 **Bioinformatics Tools**
 
-- Biological data analysis: Biopython, Bioconductor
+- Biological data analysis: Biopython, Bioconductor.
+- Transcriptomics & RNA-seq: Kallisto.
+- Genomic data management: SAM/BAM files.
+- Sequence alignment tools: BLAST, Bowtie2, STAR.
 
 **Visualization & Reporting**
 
