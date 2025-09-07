@@ -14,7 +14,9 @@ The goal of this project is to share its content, including scripts (R Markdown 
 **Statistics & Modeling**
 
 **Descriptive statistics**
+
 **Comparing group means: t-test, ANOVA.**
+
 **Machine learning algorithms**
 
 **Bioinformatics tools**
@@ -31,3 +33,6 @@ The goal of this project is to share its content, including scripts (R Markdown 
 **Gain greater experience in exploratory analysis, visualization, and statistical modeling of omics data.**
 
 **Critical analysis of biological data using reproducible pipelines**
+
+
+## References
