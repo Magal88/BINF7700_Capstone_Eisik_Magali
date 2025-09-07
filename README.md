@@ -28,4 +28,5 @@ The goal of this project is to share its content, including scripts (R Markdown 
 ## Learning Goals for the Course
 
 **Gain greater experience in exploratory analysis, visualization, and statistical modeling of omics data.**
+
 **Critical analysis of biological data using reproducible pipelines**
