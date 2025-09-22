@@ -1,6 +1,9 @@
 # Bioinformatics Capstone Project
 
 This repository contains the final capstone project for the MSc in Bioinformatics at Northeastern University.  The goal of this project is to share its content, including scripts (R Markdown and Jupyter Notebooks), datasets, and results, to provide a reproducible and well-documented analysis methodology.  In addition, this project highlights hands-on applications of Bioinformatics and Computational Biology skills developed in the MSc program.
+
+In this project, an epigenetic clock is constructed using DNA methylation data from GSE40279
+. SHAP analysis and pathway enrichment provide interpretability and biological context for precision aging research.
 The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE40279](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279).
 
 
