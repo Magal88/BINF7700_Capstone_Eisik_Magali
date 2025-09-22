@@ -1,6 +1,8 @@
 # Bioinformatics Capstone Project
 
 This repository contains the final capstone project for the MSc in Bioinformatics at Northeastern University.  The goal of this project is to share its content, including scripts (R Markdown and Jupyter Notebooks), datasets, and results, to provide a reproducible and well-documented analysis methodology.  In addition, this project highlights hands-on applications of Bioinformatics and Computational Biology skills developed in the MSc program.
+The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE40279](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279).
+
 
 ## Technical Skills Inventory
 
@@ -11,16 +13,14 @@ This repository contains the final capstone project for the MSc in Bioinformatic
 
 **Statistics & Modeling**
 
-- Descriptive statistics
+- Descriptive statistics.
 - Comparing group means: t-test, ANOVA
-- Machine learning algorithms
+- Machine learning algorithms: ElasticNet, Random Forest, Ridge, Lasso, SVR, XGBoost, LightGBM.
 
 **Bioinformatics Tools**
 
 - Biological data analysis: Biopython, Bioconductor.
-- Transcriptomics & RNA-seq: Kallisto.
-- Genomic data management: SAM/BAM files.
-- Sequence alignment tools: BLAST, Bowtie2, STAR.
+- Enrichment Tools: GenAge, GO, KEGG.
 
 **Visualization & Reporting**
 
