@@ -18,12 +18,12 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 
 - Descriptive statistics.
 - Comparing group means: t-test, ANOVA
-- Machine learning algorithms: ElasticNet, Random Forest, Ridge, Lasso, SVR, XGBoost, LightGBM.
+- Machine learning algorithms: ElasticNet, Random Forest.
 
 **Bioinformatics Tools**
 
 - Biological data analysis: Biopython, Bioconductor.
-- Enrichment Tools: GenAge, GO, KEGG.
+- Enrichment Tools: GenAge, KEGG.
 
 **Visualization & Reporting**
 
