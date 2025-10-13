@@ -4,7 +4,7 @@ This repository contains the final capstone project for the MSc in Bioinformatic
 
 In this project, an epigenetic clock is constructed using DNA methylation data from GSE55763
 . SHAP analysis and pathway enrichment provide interpretability and biological context for precision aging research.
-The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763]([https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE55763)).
+The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763] ([https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE55763)).
 
 
 ## Technical Skills Inventory
