@@ -1,0 +1,103 @@
+---
+title: "Preparing GSE55763 Beta Value Datasets for Modeling"
+author: "Magalí Eisik"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+This script processes the GSE55763 methylation dataset to create a tidy dataset with samples (GSM IDs) as rows, CpG probes as columns, and associated metadata including sex and age. The resulting dataset is ready for downstream modeling and analysis.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+#Load require packages
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(readr)
+```
+
+Load metadata
+
+```{r}
+metadata_GSE55763 <- read.csv("GSE55763_metadata_clean.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Display first 3 rows
+head(metadata_GSE55763,3)
+```
+
+This dataset contains the mapping between array IDs and their corresponding GSM sample IDs.
+
+```{r}
+array_to_GSM_mapping <- read.csv("array_to_GSM_mapping_clean.csv", header = TRUE, stringsAsFactors = FALSE)
+head(array_to_GSM_mapping)
+
+```
+
+The GSE55763_top500_var.csv dataset contains beta values for DNA methylation at 500 CpG sites selected based on the highest variance across samples. Only the first 100 samples were included to make the dataset manageable for local analysis and visualization.
+
+```{r}
+betas_sub500 <- read.csv("GSE55763_top500_var.csv", header = TRUE, stringsAsFactors = FALSE)
+head(betas_sub500 )
+
+colnames(betas_sub500) <- sub("^X", "", colnames(betas_sub500))
+beta_cols <- grep("^\\d", colnames(betas_sub500), value = TRUE)
+
+```
+
+Reshapes betas_sub500 from wide to long format, turning all columns except ID_REF into two columns: Array_ID (column names) and beta (values)
+
+```{r}
+betas_long <- betas_sub500 %>%
+  select(ID_REF, all_of(beta_cols)) %>%
+  pivot_longer(
+    cols = -ID_REF,
+    names_to = "Array_ID",
+    values_to = "beta"
+  ) %>%
+  inner_join(array_to_GSM_mapping, by = "Array_ID")  # add GSM_ID
+```
+
+Map Array_ID to GSM_ID
+
+```{r}
+betas_long <- betas_sub500 %>%
+  pivot_longer(
+    cols = -ID_REF,
+    names_to = "Array_ID",
+    values_to = "beta"
+  ) %>%
+  inner_join(array_to_GSM_mapping, by = "Array_ID")  # add GSM_ID
+```
+
+The beta values were first reshaped from wide to long format, making each sample (GSM_ID) a row and each CpG probe a column, which prepares the data for analysis. The long-format beta data was then merged with the sample metadata using GSM_ID as the key, combining methylation measurements with relevant annotations. After verifying the dimensions and inspecting the first rows to ensure correctness, the final merged dataset was saved as a CSV file for downstream analyses or machine learning applications.
+
+```{r}
+betas_wide <- betas_long %>%
+  select(-Array_ID) %>%
+  pivot_wider(
+    names_from = ID_REF,
+    values_from = beta
+  )
+```
+
+Merge with metadata
+
+```{r}
+merged_data <- metadata_GSE55763 %>%
+  inner_join(betas_wide, by = c("X" = "GSM_ID"))
+dim(merged_data)
+merged_data <- merged_data %>%
+  select(-tissue, -dataset)
+head(merged_data[,1:10])
+```
+
+Save data set in CSV format
+
+```{r}
+write.csv(merged_data, "GSE55763_merged.csv", row.names = FALSE)
+```
