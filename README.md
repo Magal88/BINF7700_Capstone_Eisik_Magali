@@ -53,4 +53,6 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 - FoxoTech. (2023). *methylprep*. GitHub repository.  Available at: [https://github.com/FoxoTech/methylprep](https://github.com/FoxoTech/methylprep)
 - [GEOparse](https://geoparse.readthedocs.io/en/latest/GEOparse.html) GEOparse documentation.
 - [ggplot2 Documentation](https://ggplot2.tidyverse.org/) - A tool for data visualization in R.
+- MarineGenomicsLab. (n.d.). *Marine Genomics Lab*. GitHub repository. Available at: [https://github.com/marinegenomicslab](https://github.com/marinegenomicslab)
 - NBIS Epigenomics Workshop 2025: DNA Methylation Array Workflow. National Bioinformatics Infrastructure Sweden (NBIS). Available at: https://nbis-workshop- epigenomics.readthedocs.io/en/latest/content/tutorials/methylationArray/Array_Tutorial.html
+  
