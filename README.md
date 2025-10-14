@@ -44,5 +44,6 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 - [Bioconductor](https://bioconductor.org/) - An open-source repository for bioinformatics tools and packages in R.
 - [Biopython](https://biopython.org/) - Open-source Python tools for analyzing biological data.
 - Data to Viz. (n.d.). *From Data to Viz: A classification of chart types based on input data*. Retrieved from [https://www.data-to-viz.com/](https://www.data-to-viz.com/)
+- FoxoTech. (2023). *methylprep*. Repositorio de GitHub. Disponible en: [https://github.com/FoxoTech/methylprep](https://github.com/FoxoTech/methylprep)
 - [GEOparse](https://geoparse.readthedocs.io/en/latest/GEOparse.html) GEOparse documentation.
 - [ggplot2 Documentation](https://ggplot2.tidyverse.org/) - A tool for data visualization in R.
