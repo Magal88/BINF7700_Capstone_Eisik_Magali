@@ -31,17 +31,16 @@ head(GSE55763_100_imputed,3)
 # Identify CpG columns
 cpg_columns <- grep("^cg", colnames(GSE55763_100_imputed), value = TRUE)
 
-# Copy the dataset
+# Copy the dataset in object called GSE55763_M
 GSE55763_M <- GSE55763_100_imputed
 
 # Extract Beta values
 beta_matrix <- GSE55763_M[, cpg_columns]
 
-# Avoid 0 and 1
 beta_matrix[beta_matrix == 0] <- 1e-6
 beta_matrix[beta_matrix == 1] <- 1 - 1e-6
 
-# Transform Beta to M values
+# Transform Beta to M values (logit transformation)
 M_matrix <- log2(beta_matrix / (1 - beta_matrix))
 
 # Replace CpG columns with M values
@@ -50,6 +49,10 @@ GSE55763_M[, cpg_columns] <- M_matrix
 ```
 
 
+```{r}
+#Verify first 3 rows
+head(GSE55763_M,3)
+```
 
 
 ```{r}
