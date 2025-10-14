@@ -12,10 +12,12 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 **Computational & Analytical Skills**
 
 - **R**: R Notebooks (.Rmd)
-- 
+  
   https://rpubs.com/magal88/1355090
 
   https://rpubs.com/magal88/1355305
+
+  https://rpubs.com/magal88/1355330
   
 - **Python**: Jupyter Notebooks (.ipynb)
 
