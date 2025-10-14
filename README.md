@@ -40,6 +40,7 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 
 ## References
 
+- AkshajD. (2023). *Epigenetic-Clock*. GitHub repository. Available at: [https://github.com/AkshajD/Epigenetic-Clock](https://github.com/AkshajD/Epigenetic-Clock)
 - [Bioconductor](https://bioconductor.org/) - An open-source repository for bioinformatics tools and packages in R.
 - [Biopython](https://biopython.org/) - Open-source Python tools for analyzing biological data.
 - Data to Viz. (n.d.). *From Data to Viz: A classification of chart types based on input data*. Retrieved from [https://www.data-to-viz.com/](https://www.data-to-viz.com/)
