@@ -22,12 +22,12 @@ library(Metrics)
 ```
 
 
-The dataset with median-imputed missing values is used to ensure a complete set of CpGs and samples for Elastic Net modeling.
+The dataset with median-imputed missing values is used to ensure a complete set of CpGs and samples for Elastic Net modeling. In addition, the beta values were converted into M values.
 
 ```{r}
 #Load data set
-GSE55763_100_imputed <- read.csv("GSE55763_100_imputed.csv", header = TRUE, stringsAsFactors = FALSE)
-head(GSE55763_100_imputed,3)
+GSE55763_M <- read.csv("GSE55763_M_values.csv", header = TRUE, stringsAsFactors = FALSE)
+head(GSE55763_M,3)
 ```
 
 
@@ -35,7 +35,7 @@ head(GSE55763_100_imputed,3)
 Select a small, balanced subset to test and debug the model quickly (10 males and 10 females)
 
 ```{r}
-subset_df <- GSE55763_100_imputed %>%
+subset_df <- GSE55763_M %>%
   group_by(gender) %>%
   slice_head(n = 10) %>%
   ungroup()
@@ -145,6 +145,6 @@ ggplot(pred_df, aes(x = ActualAge, y = PredictedAge)) +
 
 
 
-The R² of 0.672 indicates that about 67% of the variance in chronological age is explained by the model.
-The MAE of 5.73 years shows that, on average, the predicted age deviates from the actual age by approximately 5 to 6 years. 
-The RMSE of 6.62 years reflects the overall magnitude of prediction errors, giving slightly more weight to larger deviations.
+The R² of 0.71 indicates that about 71% of the variance in chronological age is explained by the model.
+The MAE of 5.81 years shows that, on average, the predicted age deviates from the actual age by approximately 5 to 6 years. 
+The RMSE of 6.71 years reflects the overall magnitude of prediction errors, giving slightly more weight to larger deviations.
