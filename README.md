@@ -26,7 +26,6 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 **Statistics & Modeling**
 
 - Descriptive statistics.
-- Comparing group means: t-test, ANOVA
 - Machine learning algorithms: ElasticNet, Random Forest.
 
 **Bioinformatics Tools**
