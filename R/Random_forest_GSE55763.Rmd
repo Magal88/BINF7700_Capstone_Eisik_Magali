@@ -1,0 +1,174 @@
+---
+title: "Random forest for GSE55763 (subset)"
+author: "Magalí Eisik"
+output:
+  html_document:
+    df_print: paged
+---
+
+In this document, a Random Forest regression model is implemented to predict chronological age using the 100 most variable CpG sites from the GSE55763 dataset.A small balanced subset of samples is used for initial testing and debugging.
+The workflow includes data scaling, model training, extraction of feature importance, and evaluation of model performance using R², MAE, and RMSE metrics.
+
+
+```{r ,message=FALSE,warning=FALSE}
+#Load require packages
+
+library(randomForest)
+library(caret)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(kableExtra)
+library(Metrics)
+```
+
+
+
+The dataset with median-imputed missing values is used to ensure a complete set of CpGs and samples for Elastic Net modeling. In addition, the beta values were converted into M values.
+
+```{r}
+#Load data set
+GSE55763_M <- read.csv("GSE55763_M_values.csv", header = TRUE, stringsAsFactors = FALSE)
+
+head(GSE55763_M,3)
+GSE55763_M$gender<- factor(GSE55763_M$gender)
+```
+
+Select a subset (20 samples: 10 men and 10 women):
+
+```{r}
+subset_df <- GSE55763_M %>%
+  group_by(gender) %>%
+  slice_head(n = 10) %>%
+  ungroup()
+```
+
+
+
+```{r}
+cpg_cols <- colnames(subset_df)[4:ncol(subset_df)]
+X_cpg <- scale(subset_df[, cpg_cols])
+X_pred <- cbind(X_cpg, model.matrix(~ gender - 1, data = subset_df))
+y_age <- subset_df$age
+
+# --- Split the data into training (80%) and testing (20%) 
+set.seed(500)
+n <- nrow(subset_df)
+train_idx <- sample(1:n, size = 0.8*n)
+
+X_train <- X_pred[train_idx, ]
+y_train <- y_age[train_idx]
+
+X_test <- X_pred[-train_idx, ]
+y_test <- y_age[-train_idx]
+
+#Train random forest
+set.seed(500) # for reproducibility
+rf_model <- randomForest(x = X_pred, y = y_age, ntree = 100, importance = TRUE)
+
+```
+
+Metrics:
+
+```{r}
+#Predictions
+pred <- predict(rf_model, newdata = X_test)
+
+# Metrics
+R2 <- cor(pred, y_test)^2
+MAE <- mean(abs(pred - y_test))
+RMSE <- sqrt(mean((pred - y_test)^2))
+
+cat(sprintf("Random Forest Metrics (subset):\nR2 = %.2f\nMAE = %.2f\nRMSE = %.2f\n", R2, MAE, RMSE))
+
+```
+
+The R² of 0.99 indicates that about 99% of the variance in chronological age is explained by the Random Forest model. The MAE of 2.84 years shows that, on average, the predicted age deviates from the actual age by approximately 2 to 3 years. The RMSE of 3.40 years reflects the overall magnitude of prediction errors, giving slightly more weight to larger deviations.
+
+
+
+```{r}
+# Importance of variables
+importance_df <- data.frame(
+  CpG = rownames(rf_model$importance),
+  Importance = rf_model$importance[, "%IncMSE"],
+  row.names = NULL
+)
+
+# Arrange and select top 10
+top10_df <- importance_df %>%
+  arrange(desc(Importance)) %>%
+  head(10)
+
+# Display results
+top10_df %>%
+  kable("html", caption = "Top 10 CpGs Feature Importance in Random Forest") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+
+Visualization: 
+
+Line plot (Cumulative Importance Plot o Cumulative Feature Importance Plot)
+
+```{r}
+# Cpgs with positive importance
+importance_pos <- importance_df %>% 
+  filter(Importance > 0) %>%
+  arrange(desc(Importance))
+
+
+# Create a new column called Cumulative (contains the cumulative sum of the values in the Importance column)
+importance_pos$Cumulative <- cumsum(importance_pos$Importance)
+
+
+ ggplot(importance_pos, aes(x = 1:nrow(importance_pos), y = Cumulative)) +
+  geom_line(color = "magenta") +
+  geom_point(color = "green1") +
+  theme_minimal() +
+  labs(title = "Cumulative Feature Importance (Positive CpGs)",
+       x = "Ranked CpGs",
+       y = "Cumulative Contribution to Model")
+```
+
+
+
+Barplot 
+
+```{r}
+g1<- ggplot(top10_df, aes(x = reorder(CpG, Importance), y = Importance)) +
+  geom_bar(stat = "identity", fill = "coral1") +
+  coord_flip() +  
+  theme_minimal() +
+  labs(title = "Top 10 CpGs Feature Importance",
+       x = "CpG Sites",
+       y = "Contribution to model")
+```
+
+
+Scatterplot
+
+```{r}
+g2<- ggplot(data.frame(Observed = y_test, Predicted = pred), aes(x = Observed, y = Predicted)) +
+  geom_point(color = "steelblue", size = 3) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "orange1") +
+  theme_minimal() +
+  labs(title = "Random Forest: Predicted vs Observed Age",
+       x = "Observed Age",
+       y = "Predicted Age")
+
+grid.arrange(g1,g2)
+```
+
+
+
+```{r}
+#Save graphs
+png("RandomForest_subset.png", width = 1200, height = 1800, res = 150)
+grid.arrange(g1,g2)
+dev.off()
+```
+
+
+
+
