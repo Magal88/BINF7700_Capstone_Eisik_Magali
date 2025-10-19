@@ -30,7 +30,9 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 - Python: matplotlib, seaborn
 
 ## Repository structure
+
 **Python**
+
 - Scripts (.py)
 - Jupyter notebooks (.ipynb)  
 
@@ -64,20 +66,24 @@ Stores figures generated during analysis
 **R**
 
 **Install Bioconductor**
+
 install.packages("BiocManager")
 BiocManager::install()
 
 **Install required CRAN packages**
+
 install.packages(c(
   "ggplot2", "dplyr", "tidyr",  "tibble",  
   "gridExtra", "factoextra", "FactoMineR", "glmnet", "randomForest"
 ))
 
 **Python**
+
 pip install biopython pandas numpy matplotlib seaborn scikit-learn shap GEOparse
 
 
 **HPC Environment / Setup**
+
 conda create -n geo_env python=3.10 
 conda activate geo_env
 
