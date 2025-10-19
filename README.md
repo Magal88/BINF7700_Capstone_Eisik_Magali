@@ -12,20 +12,7 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 **Computational & Analytical Skills**
 
 - **R**: R Notebooks (.Rmd)
-  
-  https://rpubs.com/magal88/1355090
-
-  https://rpubs.com/magal88/1355305
-
-  https://rpubs.com/magal88/1355330
-
-  https://rpubs.com/magal88/1355441
-
-  https://rpubs.com/magal88/1356594
-
-  https://rpubs.com/magal88/1357237
-
-- **Python**: Jupyter Notebooks (.ipynb)
+- **Python**: Jupyter Notebooks (.ipynb), scripts (.py)
 
 **Statistics & Modeling**
 
@@ -42,6 +29,55 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 - R: ggplot2
 - Python: matplotlib, seaborn
 
+## Repository structure
+**Python**
+- Scripts (.py)
+- Jupyter notebooks (.ipynb)  
+
+
+**R**
+
+- Scripts (Rmd) contains scripts and R pubs links:
+ https://rpubs.com/magal88/1355090
+
+  https://rpubs.com/magal88/1355305
+
+  https://rpubs.com/magal88/1355330
+
+  https://rpubs.com/magal88/1355441
+
+  https://rpubs.com/magal88/1356594
+
+  https://rpubs.com/magal88/1357237
+
+
+**Data**
+
+Stores raw and processed CSV files.
+
+**Visualizations** 
+
+Stores figures generated during analysis
+
+**Dependencies**
+**R**
+# Install Bioconductor 
+install.packages("BiocManager")
+BiocManager::install()
+
+# Install required CRAN packages
+install.packages(c(
+  "ggplot2", "dplyr", "tidyr",  "tibble",  
+  "gridExtra", "factoextra", "FactoMineR", "glmnet", "randomForest"
+))
+
+**Python**
+pip install biopython pandas numpy matplotlib seaborn scikit-learn shap GEOparse
+
+
+**HPC Environment / Setup**
+conda create -n geo_env python=3.10 
+conda activate geo_env
 
 ## References
 
