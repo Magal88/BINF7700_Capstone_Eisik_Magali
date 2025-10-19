@@ -63,6 +63,7 @@ Stores raw and processed CSV files.
 Stores figures generated during analysis
 
 **Dependencies**
+
 **R**
 
 **Install Bioconductor**
@@ -74,7 +75,7 @@ BiocManager::install()
 
 install.packages(c(
   "ggplot2", "dplyr", "tidyr",  "tibble",  
-  "gridExtra", "factoextra", "FactoMineR", "glmnet", "randomForest"
+  "gridExtra", "factoextra", "FactoMineR", "glmnet", "randomForest","clusterProfiler","KEGGREST"
 ))
 
 **Python**
