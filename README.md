@@ -62,11 +62,12 @@ Stores figures generated during analysis
 
 **Dependencies**
 **R**
-# Install Bioconductor 
+
+**Install Bioconductor**
 install.packages("BiocManager")
 BiocManager::install()
 
-# Install required CRAN packages
+**Install required CRAN packages**
 install.packages(c(
   "ggplot2", "dplyr", "tidyr",  "tibble",  
   "gridExtra", "factoextra", "FactoMineR", "glmnet", "randomForest"
