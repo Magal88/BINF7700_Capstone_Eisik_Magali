@@ -1,0 +1,141 @@
+---
+title: "Elastic Net for GSE55763"
+author: "Magalí Eisik"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+
+In this document,Elastic Net regression is implemented to build an epigenetic clock. Gender is included as a covariate to account for sex differences in DNA methylation. The workflow includes preparation of predictors (CpGs and gender), cross-validated model fitting, and extraction of selected CpGs and performance metrics.
+
+
+```{r, message=FALSE,warning=FALSE}
+#Load require packages
+
+library(glmnet)
+library(dplyr)
+library(ggplot2)
+library(kableExtra)
+library(Metrics)
+
+```
+
+
+The dataset with median-imputed missing values is used to ensure a complete set of CpGs and samples for Elastic Net modeling. In addition, the beta values were converted into M values.
+
+```{r}
+#Load data set
+GSE55763_M <- read.csv("GSE55763_M_values.csv", header = TRUE, stringsAsFactors = FALSE)
+
+head(GSE55763_M,3)
+GSE55763_M$gender<- factor(GSE55763_M$gender)
+```
+
+
+```{r}
+X_pred <- as.matrix(GSE55763_M[, 4:ncol(GSE55763_M)])  #Cpg columns
+gender <- as.factor(GSE55763_M$gender)
+X_pred <- cbind(X_pred, model.matrix(~ gender - 1))      # Gender as a covariate
+y_age <- GSE55763_M$age
+```
+
+
+
+
+
+
+```{r}
+
+cv_enet <- cv.glmnet(X_pred, y_age, alpha = 0, nfolds = 5)
+best_lambda <- cv_enet$lambda.min
+enet_model <- glmnet(X_pred, y_age, alpha = 0, lambda = best_lambda)
+
+coef_df <- data.frame(
+  CpG = rownames(coef(enet_model)),
+  Weight = as.numeric(coef(enet_model))
+) %>% filter(CpG != "(Intercept)") %>%
+  arrange(desc(abs(Weight)))
+cv_enet <- cv.glmnet(X_pred, y_age, alpha = 0, nfolds = 5)
+best_lambda <- cv_enet$lambda.min
+enet_model <- glmnet(X_pred, y_age, alpha = 0, lambda = best_lambda)
+```
+
+
+Extract cpg weights
+
+```{r}
+
+
+# Order by absolute weight
+coef_df <- coef_df %>% arrange(desc(abs(Weight)))
+
+# Display table
+coef_df %>%
+  kable("html", caption = "CpGs with non-zero coefficients in Elastic Net model") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE)
+```
+
+
+
+
+The Elastic Net regression model is evaluated using three key metrics. 
+R² (Coefficient of Determination) indicates the proportion of variance in age explained by the model. 
+MAE (Mean Absolute Error) measures the average absolute difference between predicted and actual ages. 
+RMSE (Root Mean Squared Error) calculates the square root of the average squared differences, giving more weight to larger errors.
+
+```{r}
+# Predictions
+pred_full <- predict(cv_enet, newx = X_pred, s = "lambda.min")
+
+# Metrics
+R2 <- cor(pred_full, y_age)^2
+MAE <- mean(abs(pred_full - y_age))
+RMSE <- sqrt(mean((pred_full - y_age)^2))
+
+cat(sprintf("Metrics - Elastic Net: R2=%.2f, MAE=%.2f, RMSE=%.2f\n", R2, MAE, RMSE))
+
+```
+
+
+The R² of 0.045 indicates that only about 4.5% of the variance in chronological age is explained by the model. The MAE of 8.17 years shows that, on average, the predicted age deviates from the actual age by approximately 8 years, and the RMSE of 9.99 years reflects the overall magnitude of prediction errors.
+In the Elastic Net model, setting alpha = 0 makes it Ridge regression, which shrinks all coefficients to prevent overfitting in this high-dimensional CpG dataset.
+
+
+Visualization
+
+Age predicted vs observed
+
+```{r}
+pred <- predict(enet_model, newx = X_pred)
+df_pred <- data.frame(
+  Observed = y_age,
+  Predicted = as.numeric(pred)
+)
+
+ggplot(df_pred, aes(x = Observed, y = Predicted)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", col = "blue",se=FALSE) +
+  labs(title = "Age predicted vs observed",
+       x = "Observed Age",
+       y = "Predicted Age") +
+  theme_minimal()
+```
+
+Top CpGs Contributing to Age Prediction
+
+```{r}
+top_cpgs <- head(coef_df, 20)  # top 20 CpGs
+
+ggplot(top_cpgs, aes(x = reorder(CpG, Weight), y = Weight)) +
+  geom_bar(stat = "identity", fill = "coral1") +
+  coord_flip() +
+  labs(title = "Top CpGs Contributing to Age Prediction ",
+       x = "CpG",
+       y = "Coefficient (Weight)") +
+  theme_minimal()
+
+```
+
+
