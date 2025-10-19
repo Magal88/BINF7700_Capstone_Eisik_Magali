@@ -42,12 +42,6 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 - R: ggplot2
 - Python: matplotlib, seaborn
 
-## Learning Goals for the Course
-
-- Gain experience in exploratory analysis, visualization, and statistical modeling of omics data.
-- Critically analyze biological data using reproducible pipelines.
-- Enhance the ability to present results clearly through visualizations, tables, and reports.
-- Promote collaborative work in bioinformatics analyses.
 
 ## References
 
