@@ -7,9 +7,9 @@ Specifically, two predictive models are implemented: Elastic Net and Random Fore
 The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279)
 
 
-## Technical Skills Inventory
+# Technical Skills Inventory
 
-# **Computational & Analytical Skills**
+## **Computational & Analytical Skills**
 
 - **R**: R Notebooks (.Rmd) 
 - **Python**: Jupyter Notebooks (.ipynb), scripts (.py) 
