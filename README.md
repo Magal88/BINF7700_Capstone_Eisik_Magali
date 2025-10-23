@@ -7,6 +7,13 @@ Specifically, two predictive models are implemented: Elastic Net and Random Fore
 The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279)
 
 
+## Learning Goals for the Course
+
+- Gain experience in exploratory analysis, visualization, and statistical modeling of omics data.
+- Critically analyze biological data using reproducible pipelines.
+- Enhance the ability to present results clearly through visualizations, tables, and reports.
+- Promote collaborative work in bioinformatics analyses.
+
 # Technical Skills Inventory
 
 ## **Computational & Analytical Skills**
