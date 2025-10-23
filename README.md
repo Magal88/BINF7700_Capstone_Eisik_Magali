@@ -9,10 +9,10 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 
 ## Technical Skills Inventory
 
-**Computational & Analytical Skills**
+# **Computational & Analytical Skills**
 
-- **R**: R Notebooks (.Rmd)
-- **Python**: Jupyter Notebooks (.ipynb), scripts (.py)
+- **R**: R Notebooks (.Rmd) 
+- **Python**: Jupyter Notebooks (.ipynb), scripts (.py) 
 
 **Statistics & Modeling**
 
@@ -29,6 +29,13 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 - R: ggplot2
 - Python: matplotlib, seaborn
 
+**Data manipulation**
+
+- R: dplyr, tidyr.
+- 
+- Python: pandas, NumPy
+
+  
 ## Repository structure
 
 **Python**
