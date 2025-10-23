@@ -113,3 +113,6 @@ conda activate geo_env
 - MarineGenomicsLab. (n.d.). *Marine Genomics Lab*. GitHub repository. Available at: [https://github.com/marinegenomicslab](https://github.com/marinegenomicslab)
 - NBIS Epigenomics Workshop 2025: DNA Methylation Array Workflow. National Bioinformatics Infrastructure Sweden (NBIS). Available at: https://nbis-workshop- epigenomics.readthedocs.io/en/latest/content/tutorials/methylationArray/Array_Tutorial.html
   
+## Acknowledgements
+
+**Author:** Magalí Eisik
