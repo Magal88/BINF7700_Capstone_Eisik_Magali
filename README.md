@@ -32,7 +32,7 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 **Data manipulation**
 
 - R: dplyr, tidyr.
-- 
+  
 - Python: pandas, NumPy
 
   
