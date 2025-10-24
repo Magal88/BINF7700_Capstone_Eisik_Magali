@@ -108,7 +108,11 @@ pip install biopython pandas numpy matplotlib seaborn scikit-learn shap GEOparse
 
 **HPC Environment / Setup**
 
-conda create -n geo_env python=3.10 
+```bash
+# Create a new conda environment with Python 3.10
+conda create -n geo_env python=3.10
+
+# Activate the environment
 conda activate geo_env
 
 ## References
