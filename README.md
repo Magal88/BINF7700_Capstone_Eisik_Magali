@@ -116,8 +116,7 @@ conda create -n geo_env python=3.10
 
 # Activate the environment
 conda activate geo_env
-
-
+```
 
 ## References
 
