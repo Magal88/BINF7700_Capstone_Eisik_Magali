@@ -131,6 +131,7 @@ conda activate geo_env
 - [ggplot2 Documentation](https://ggplot2.tidyverse.org/) - A tool for data visualization in R.
 - Lundberg, S. M., & Lee, S.-I. (n.d.). SHAP: A game theoretic approach to explain the output of any machine learning model. GitHub repository. Available at: [https://github.com/shap/shap)
 - MarineGenomicsLab. (n.d.). *Marine Genomics Lab*. GitHub repository. Available at: [https://github.com/marinegenomicslab](https://github.com/marinegenomicslab)
+- ModelOriented. (n.d.). shapviz. GitHub repository. Available at: [https://github.com/ModelOriented/shapviz)
 - NBIS Epigenomics Workshop 2025: DNA Methylation Array Workflow. National Bioinformatics Infrastructure Sweden (NBIS). Available at: https://nbis-workshop- epigenomics.readthedocs.io/en/latest/content/tutorials/methylationArray/Array_Tutorial.html
 
 ## First Release
