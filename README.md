@@ -53,20 +53,7 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 **R**
 
 - Scripts (Rmd) contains scripts and R pubs links:
-- 
- https://rpubs.com/magal88/1355090
-
-  https://rpubs.com/magal88/1355305
-
-  https://rpubs.com/magal88/1355330
-
-  https://rpubs.com/magal88/1355441
-
-  https://rpubs.com/magal88/1356594
-
-  https://rpubs.com/magal88/1357237
-
-  https://rpubs.com/magal88/1357454
+  
 
   https://rpubs.com/magal88/1357473
 
