@@ -222,4 +222,51 @@ top20_cpgs %>%
 
 
 
+```{r}
+g1<- ggplot(GSE55763_beta, aes(x = gender, y = age, fill = gender)) +
+  geom_boxplot(alpha = 0.6, outlier.size = 1) +
+  scale_fill_manual(values = c("steelblue", "magenta")) +
+  theme_minimal() +
+  labs(title = "Age distribution by Gender",
+       x = "Gender",
+       y = "Age") +
+  theme(legend.position = "none")
+ggsave(filename = "boxplot.png", plot = g1, width = 6, height = 4, dpi = 300)
+```
+
+
+
+```{r}
+g2<- ggplot(GSE55763_beta, aes(x = gender, y = age, fill = gender)) +
+  geom_violin(alpha = 0.6) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.5) +
+  scale_fill_manual(values = c("green2", "coral1")) +
+  theme_minimal() +
+  labs(title = "Age distribution by Gender",
+       x = "Gender",
+       y = "Age") +
+  theme(legend.position = "none")
+ggsave(filename = "violin_plot.png", plot = g2, width = 6, height = 4, dpi = 300)
+```
+
+
+
+```{r}
+g3<- ggplot(GSE55763_beta, aes(x = gender, fill = gender)) +
+  geom_bar() +
+  scale_fill_manual(values = c("steelblue", "pink")) +
+  theme_minimal() +
+  labs(title = "Gender Distribution", x = "Gender", y = "Samples")
+ggsave(filename = "barplot.png", plot = g3, width = 6, height = 4, dpi = 300)
+```
+
+
+
+```{r}
+g4<- ggplot(GSE55763_beta, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "violet", color = "black") +
+  theme_minimal() +
+  labs(title = "Age Distribution", x = "Age", y = "Samples")
+ggsave(filename = "histogram.png", plot = g4, width = 6, height = 4, dpi = 300)
+```
 
