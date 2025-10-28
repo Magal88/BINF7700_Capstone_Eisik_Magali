@@ -1,0 +1,258 @@
+---
+title: "Elastic net model for GSE55763 (500 cpgs)"
+author: "Magalí Eisik"
+output:
+  html_document:
+    df_print: paged
+---
+
+In this notebook, an Elastic Net regression model is implemented to build an epigenetic clock for age prediction. The model includes gender as a covariate to account for sex-specific differences in DNA methylation.
+
+```{r message=FALSE,warning=FALSE}
+#Load require packages
+library(dplyr)    
+library(readr) 
+library(tibble)
+library(ggplot2)  
+library(knitr)    
+library(glmnet)
+library(kableExtra)
+library(knitr)
+library(gridExtra)
+
+```
+
+```{r}
+#Load data set
+subset_500_M_imputed <- read.csv("GSE55763_top500_Mvalues.csv", header = TRUE, stringsAsFactors = FALSE)
+```
+
+## Prepare matrix for Elastic Net model
+
+```{r}
+# Metadata columns
+meta_cols <- c("X", "gender", "age")
+
+# CpG matrix (select cpgs)
+X_cpg <- subset_500_M_imputed %>% select(-all_of(meta_cols))
+
+# Scale CpGs: mean 0, SD 1
+X_scaled <- scale(X_cpg)
+
+# Incorporate the variable Gender (factor) as covariate in the model
+gender <- as.factor(subset_500_M_imputed$gender)
+X_gender <- model.matrix(~ gender - 1)  # gender as a dummy 
+
+# Predictors
+X_pred <- cbind(X_scaled, X_gender)
+
+# Response variable (outcome=age)
+y_age <- subset_500_M_imputed$age
+```
+
+## Cross validation
+
+```{r}
+set.seed(500)  # for reproducibility
+
+cv_enet <- cv.glmnet(X_pred, y_age, alpha = 0.5, nfolds = 5)  #alpha=0.5, folds=5
+best_lambda <- cv_enet$lambda.min
+
+enet_model <- glmnet(X_pred, y_age, alpha = 0.5, lambda = best_lambda)
+```
+
+## Coefficients
+
+```{r}
+# Extract coefficients
+coef_mat <- coef(cv_enet, s = "lambda.min")
+
+# Convert to tidy data frame
+coef_df <- as.data.frame(as.matrix(coef_mat)) %>%
+  rownames_to_column("CpG") %>%
+  rename(Weight = !!colnames(.)[2]) %>%  # Rename the second column dynamically
+  filter(CpG != "(Intercept)") %>%
+  arrange(desc(abs(Weight))) %>%
+  slice(1:20)
+
+# Display table 
+kable(coef_df, digits = 4, caption = "Top 20 Elastic Net Model Coefficients") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+
+## Metrics
+
+R2: coefficient of determination MAE: mean absolute error RMSE: root mean squared error
+
+```{r}
+# Predictions
+pred_full <- predict(cv_enet, newx = X_pred, s = "lambda.min")
+
+# Metrics
+R2 <- cor(pred_full, y_age)^2
+MAE <- mean(abs(pred_full - y_age))
+RMSE <- sqrt(mean((pred_full - y_age)^2))
+
+cat(sprintf("Metrics - Elastic Net: R2=%.2f, MAE=%.2f, RMSE=%.2f\n", R2, MAE, RMSE))
+```
+
+The R² of 0.84 indicates that only about 84% of the variance in chronological age is explained by the model. The MAE of 3.19 years shows that, on average, the predicted age deviates from the actual age by approximately 3 years, and the RMSE of 4.08 years reflects the overall magnitude of prediction errors.
+
+### Data Visualization
+
+## Age predicted vs observed
+
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+
+# Predictions of the model
+pred <- predict(cv_enet, newx = X_pred, s = "lambda.min")
+
+
+df_pred <- data.frame(
+  Observed = y_age,
+  Predicted = as.numeric(pred)
+)
+
+
+#Show metrics in graph
+metrics_text <- sprintf("R² = %.2f\nMAE = %.2f\nRMSE = %.2f", R2, MAE, RMSE)
+
+ggplot(df_pred, aes(x = Observed, y = Predicted)) +
+  geom_point(alpha = 0.5, color = "steelblue") +
+  geom_smooth(method = "lm", color = "magenta", se = FALSE) +
+  annotate("text",
+           x = min(df_pred$Observed), y = max(df_pred$Predicted),
+           label = metrics_text, hjust = 0, vjust = 1,
+           size = 4, color = "black") +
+  labs(
+    title = "Predicted vs Observed Age",
+    x = "Observed Age",
+    y = "Predicted Age"
+  ) +
+  theme_minimal()
+```
+
+### Top variables Contributing to Age Prediction
+
+```{r}
+top_cpgs <- head(coef_df, 20)  # top 20 variables
+
+ggplot(top_cpgs, aes(x = reorder(CpG, Weight), y = Weight)) +
+  geom_bar(stat = "identity", fill = "coral1") +
+  coord_flip() +
+  labs(title = "Top variables Contributing to Age Prediction ",
+       x = "Variables",
+       y = "Coefficient (Weight)") +
+  theme_minimal()
+
+```
+
+The Elastic Net model identified CpG sites and gender as key contributors to age prediction. The top CpGs showed strong associations with chronological age, suggesting their relevance as age-associated methylation patterns. A positive coefficient for genderF indicates that females tend to have slightly higher predicted epigenetic age, reflecting sex-specific methylation differences.
+
+
+
+```{r}
+# Select top 50cpgs
+top_cpgs <- coef_df %>%
+  filter(grepl("^cg", CpG)) %>%
+  arrange(desc(abs(Weight))) 
+
+# Clasify hypomethylated and hypermethylated
+top_cpgs <- top_cpgs %>%
+  mutate(Methylation_Change = ifelse(Weight > 0, "Hypermethylated", "Hypomethylated"))
+
+
+ggplot(top_cpgs, aes(x = reorder(CpG, Weight), y = Weight, fill = Methylation_Change)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  scale_fill_manual(values = c("Hypermethylated" = "firebrick2", "Hypomethylated" = "steelblue")) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
+  labs(
+    title = "CpGs Contributing to Age Prediction (Hypo vs Hypermethylated)",
+    x = "CpG sites",
+    y = "Elastic Net Coefficient (Weight)",
+    fill = "Methylation Change"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.y = element_text(size = 8)
+  )
+```
+
+Save graphs in png format
+
+```{r, message=FALSE, warning=FALSE}
+
+p1 <- ggplot(df_pred, aes(x = Observed, y = Predicted)) +
+  geom_point(alpha = 0.5, color = "steelblue") +
+  geom_smooth(method = "lm", color = "magenta", se = FALSE) +
+  annotate("text",
+           x = min(df_pred$Observed), y = max(df_pred$Predicted),
+           label = metrics_text, hjust = 0, vjust = 1,
+           size = 4, color = "black") +
+  labs(
+    title = "Chronological vs Biological Age",
+    x = "Chronological Age",    
+    y = "Biological Age"        
+  ) +
+  theme_minimal(base_size = 13)
+p2<- ggplot(top_cpgs, aes(x = reorder(CpG, Weight), y = Weight)) +
+  geom_bar(stat = "identity", fill = "coral1") +
+  coord_flip() +
+  labs(title = "Top variables Contributing to Age Prediction ",
+       x = "Variables",
+       y = "Coefficient (Weight)") +
+  theme_minimal()
+
+p3 <- ggplot(top_cpgs, aes(x = reorder(CpG, Weight), y = Weight, fill = Methylation_Change)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  scale_fill_manual(values = c("Hypermethylated" = "firebrick2", "Hypomethylated" = "steelblue")) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
+  labs(
+    title = "CpGs Contributing to Age Prediction (Hypo vs Hypermethylated)",
+    x = "CpG sites",
+    y = "Elastic Net Coefficient (Weight)",
+    fill = "Methylation Change"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.y = element_text(size = 8)
+  )
+
+
+# Guardar en PNG
+
+ggsave("predicted_vs_observed_age.png", plot = p1, width = 7, height = 5, dpi = 300)
+ggsave("top_variables_age_prediction.png", plot = p2, width = 7, height = 5, dpi = 300)
+ggsave("cpgs_hypo_hyper.png", plot = p3, width = 12, height = 10, dpi = 150)
+
+
+```
+
+
+
+
+Select top 50cpgs and save in a CSV file
+
+
+```{r}
+top_cpgs <- coef_df %>%
+  filter(grepl("^cg", CpG)) %>%      
+  arrange(desc(abs(Weight))) %>%
+  head(50) %>%
+  mutate(Methylation_Change = ifelse(Weight > 0, "Hypermethylated", "Hypomethylated"))
+
+write.csv(
+  top_cpgs %>% select(CpG, Weight, Methylation_Change), 
+  file = "Top50_CpGs.csv",  
+  row.names = FALSE         
+)
+```
+
+
+
+
