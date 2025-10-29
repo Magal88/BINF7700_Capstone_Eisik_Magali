@@ -112,6 +112,7 @@ conda activate geo_env
 - AkshajD. (2023). *Epigenetic-Clock*. GitHub repository. Available at: [https://github.com/AkshajD/Epigenetic-Clock](https://github.com/AkshajD/Epigenetic-Clock)
 - [Bioconductor](https://bioconductor.org/) - An open-source repository for bioinformatics tools and packages in R.
 - [Biopython](https://biopython.org/) - Open-source Python tools for analyzing biological data.
+- Ching, Y. (n.d.). Gene-Expression-Analysis-of-Biguanide-Response-in-Glioblastoma. GitHub repository. Available at: [https://github.com/chingyaousf/Gene-Expression-Analysis-of-Biguanide-Response-in-GlioblastomaGBM_biguanide_analysis)
 - Data to Viz. (n.d.). *From Data to Viz: A classification of chart types based on input data*. Retrieved from [https://www.data-to-viz.com/](https://www.data-to-viz.com/)
 - Demh. (n.d.). demh GitHub repository. Available at:  [https://github.com/demh)
 - Dozmorov, M. (n.d.). Mikhail Dozmorov GitHub repositories. GitHub repository. Available at: [https://github.com/mdozmorov)
