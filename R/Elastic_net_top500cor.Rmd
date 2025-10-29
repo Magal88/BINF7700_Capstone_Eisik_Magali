@@ -19,6 +19,7 @@ library(glmnet)
 library(kableExtra)
 library(knitr)
 library(gridExtra)
+library(broom)
 
 ```
 
@@ -98,9 +99,9 @@ cat(sprintf("Metrics - Elastic Net: R2=%.2f, MAE=%.2f, RMSE=%.2f\n", R2, MAE, RM
 
 The R² of 0.84 indicates that only about 84% of the variance in chronological age is explained by the model. The MAE of 3.19 years shows that, on average, the predicted age deviates from the actual age by approximately 3 years, and the RMSE of 4.08 years reflects the overall magnitude of prediction errors.
 
-### Data Visualization
+## Data Visualization
 
-## Age predicted vs observed
+Age predicted vs observed
 
 ```{r message=FALSE, warning=FALSE}
 library(ggplot2)
@@ -133,7 +134,7 @@ ggplot(df_pred, aes(x = Observed, y = Predicted)) +
   theme_minimal()
 ```
 
-### Top variables Contributing to Age Prediction
+Top variables Contributing to Age Prediction
 
 ```{r}
 top_cpgs <- head(coef_df, 20)  # top 20 variables
@@ -240,17 +241,21 @@ Select top 50cpgs and save in a CSV file
 
 
 ```{r}
-top_cpgs <- coef_df %>%
-  filter(grepl("^cg", CpG)) %>%      
-  arrange(desc(abs(Weight))) %>%
-  head(50) %>%
-  mutate(Methylation_Change = ifelse(Weight > 0, "Hypermethylated", "Hypomethylated"))
-
-write.csv(
-  top_cpgs %>% select(CpG, Weight, Methylation_Change), 
-  file = "Top50_CpGs.csv",  
-  row.names = FALSE         
+all_coef <- as.matrix(coef(enet_model))
+coef_df_full <- data.frame(
+  CpG = rownames(all_coef),
+  Weight = as.numeric(all_coef)
 )
+top50_cpgs <- coef_df_full %>%
+  filter(grepl("^cg", CpG)) %>%              
+  arrange(desc(abs(Weight))) %>%            
+  head(50) %>%
+  mutate(Methylation_Change = ifelse(Weight > 0,
+                                     "Hypermethylated",
+                                     "Hypomethylated"))
+write.csv(top50_cpgs %>% select(CpG, Weight, Methylation_Change),
+          "Top50_CpGs.csv",
+          row.names = FALSE)
 ```
 
 
