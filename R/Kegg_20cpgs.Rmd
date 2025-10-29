@@ -1,0 +1,191 @@
+---
+title: "KEGG Enrichment Analysis of Differentially Methylated CpG Sites"
+author: "Magalí Eisik"
+output:
+  html_document:
+    df_print: paged
+---
+
+After building the age prediction model and identifying the top 20 CpG sites that contribute most strongly to the prediction, we performed functional annotation using the KEGG pathway database. CpGs were classified as hypermethylated or hypomethylated based on their coefficients, and enrichment analysis was conducted to explore the biological pathways they are involved in.
+
+
+```{r message=FALSE,warning=FALSE}
+#Load require libraries
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(kableExtra)
+library(knitr)
+library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(enrichplot)
+library(readr)
+library(kableExtra)
+```
+
+```{r}
+#Read csv file with top50cpgs 
+top_cpgs <- read.csv("C:/Users/Owner/Desktop/BINF7770/Top20_CpGs.csv", 
+                     stringsAsFactors = FALSE)
+
+
+#view first 5 rows
+head(top_cpgs,50,5)
+```
+
+## Separate Cpgs: hyper- and hypomethylated 
+
+```{r}
+hyper_cpgs <- top_cpgs$CpG[top_cpgs$Methylation_Change == "Hypermethylated"]
+hypo_cpgs  <- top_cpgs$CpG[top_cpgs$Methylation_Change == "Hypomethylated"]
+```
+
+## CpG Annotation
+
+```{r}
+# Load annotation
+ann450k <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+ann450k_df <- as.data.frame(ann450k)
+
+# Merge top CpGs with gene names
+annotated_cpgs <- top_cpgs %>%
+  left_join(ann450k_df[, c("Name", "UCSC_RefGene_Name")],
+            by = c("CpG" = "Name"))
+
+# Split multiple genes per CpG
+df_annotation <- annotated_cpgs %>%
+  tidyr::separate_rows(UCSC_RefGene_Name, sep = ";") %>%
+  dplyr::rename(Gene = UCSC_RefGene_Name) %>%
+  dplyr::filter(Gene != "") %>%
+  dplyr::select(Methylation_Change, Gene)
+```
+
+
+
+Gene Conversion for KEGG Analysis
+
+```{r ,message=FALSE,warning=FALSE}
+# Hypermethylated 
+hyper_genes <- unique(df_annotation$Gene[df_annotation$Methylation_Change == "Hypermethylated"])
+hyper_ids <- bitr(hyper_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)
+
+# Hypomethylated 
+hypo_genes <- unique(df_annotation$Gene[df_annotation$Methylation_Change == "Hypomethylated"])
+hypo_ids <- bitr(hypo_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)
+```
+
+KEGG Enrichment Analysis by Methylation Status
+
+```{r}
+# KEGG for hypermethylated
+hyper_kegg <- enrichKEGG(gene = hyper_ids$ENTREZID, organism = 'hsa', pvalueCutoff = 0.05)
+
+# KEGG for hypomethylated
+hypo_kegg <- enrichKEGG(gene = hypo_ids$ENTREZID, organism = 'hsa', pvalueCutoff = 0.05)
+```
+
+
+Data visualization
+
+Cnetplots
+
+```{r message=FALSE,warning=FALSE}
+
+cnetplot(hyper_kegg, showCategory = min(5, nrow(hyper_kegg)))
+cnetplot(hypo_kegg, showCategory = min(5, nrow(hypo_kegg)))
+
+
+```
+
+
+Dotplots 
+
+```{r message=FALSE,warning=FALSE}
+
+dotplot(hyper_kegg, showCategory = 10) + ggtitle("KEGG Enriched Pathways (Hypermethylated CpGs)")
+dotplot(hypo_kegg, showCategory = 10) + ggtitle("KEGG Enriched Pathways (Hypomethylated CpGs)")
+
+```
+
+Barplots
+
+```{r, message=FALSE, warning=FALSE}
+barplot(hyper_kegg, showCategory = 10, title = "Hypermethylated CpG KEGG")
+barplot(hypo_kegg, showCategory = 10, title = "Hypomethylated CpG KEGG")
+```
+
+
+
+KEGG Pathway Enrichment by Methylation Status
+
+```{r}
+
+# Hyper-methylated
+hyper_table <- hyper_kegg@result
+hyper_table$Methylation_Status <- "Hypermethylated"
+
+# Hypo-methylated
+hypo_table <- hypo_kegg@result
+hypo_table$Methylation_Status <- "Hypomethylated"
+
+# Combine tables
+kegg_results <- rbind(
+  hyper_table[, c("Description", "pvalue", "p.adjust", "Methylation_Status")],
+  hypo_table[, c("Description", "pvalue", "p.adjust", "Methylation_Status")]
+)
+
+# Rename columns
+colnames(kegg_results) <- c("Pathway_Name", "PValue", "Adjusted_PValue", "Methylation_Status")
+
+# Add hyperlinks to KEGG pathways using the IDs (from the original object)
+kegg_ids <- c(hyper_kegg@result$ID, hypo_kegg@result$ID)
+kegg_results$Pathway_Name <- paste0(
+  "<a href='https://www.kegg.jp/dbget-bin/www_bget?", kegg_ids, "' target='_blank'>",
+  kegg_results$Pathway_Name,
+  "</a>"
+)
+
+
+# Order by Adjusted_PValue
+kegg_results <- kegg_results[order(kegg_results$Adjusted_PValue), ]
+
+# Display table 
+kegg_results %>%
+  knitr::kable("html", escape = FALSE,
+               caption = "<b style='text-align:center;'>KEGG Pathways Enriched by Methylation Status</b>") %>%
+  kableExtra::kable_styling(full_width = FALSE,
+                            bootstrap_options = c("striped", "hover"),
+                            position = "center")
+
+```
+
+Save results of KEGG analysis in CSV file
+
+```{r}
+# Hypermethylated
+hyper_table <- hyper_kegg@result
+hyper_table$Methylation_Status <- "Hypermethylated"
+
+# Hypomethylated
+hypo_table <- hypo_kegg@result
+hypo_table$Methylation_Status <- "Hypomethylated"
+
+# Combine tables
+kegg_results <- rbind(
+  hyper_table[, c("Description", "ID", "pvalue", "p.adjust", "Methylation_Status")],
+  hypo_table[, c("Description", "ID", "pvalue", "p.adjust", "Methylation_Status")]
+)
+
+# Rename columns
+colnames(kegg_results) <- c("Pathway_Name", "KEGG_ID", "PValue", "Adjusted_PValue", "Methylation_Status")
+
+# Create KEGG link column
+kegg_results$KEGG_Link <- paste0("https://www.kegg.jp/dbget-bin/www_bget?", kegg_results$KEGG_ID)
+kegg_results <- kegg_results[order(kegg_results$Adjusted_PValue), ]
+
+# Save to CSV
+write.csv(kegg_results, "KEGG_Pathways_Methylation.csv", row.names = FALSE)
+
+```
+
