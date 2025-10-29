@@ -19,7 +19,7 @@ library(glmnet)
 library(kableExtra)
 library(knitr)
 library(gridExtra)
-library(broom)
+
 
 ```
 
@@ -35,8 +35,7 @@ subset_500_M_imputed <- read.csv("GSE55763_top500_Mvalues.csv", header = TRUE, s
 meta_cols <- c("X", "gender", "age")
 
 # CpG matrix (select cpgs)
-X_cpg <- subset_500_M_imputed %>% select(-all_of(meta_cols))
-
+X_cpg <- dplyr::select(subset_500_M_imputed, -all_of(meta_cols))
 # Scale CpGs: mean 0, SD 1
 X_scaled <- scale(X_cpg)
 
@@ -170,7 +169,7 @@ ggplot(top_cpgs, aes(x = reorder(CpG, Weight), y = Weight, fill = Methylation_Ch
   scale_fill_manual(values = c("Hypermethylated" = "firebrick2", "Hypomethylated" = "steelblue")) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
   labs(
-    title = "CpGs Contributing to Age Prediction (Hypo vs Hypermethylated)",
+    title = "Top CpGs for Age Prediction",
     x = "CpG sites",
     y = "Elastic Net Coefficient (Weight)",
     fill = "Methylation Change"
@@ -213,7 +212,7 @@ p3 <- ggplot(top_cpgs, aes(x = reorder(CpG, Weight), y = Weight, fill = Methylat
   scale_fill_manual(values = c("Hypermethylated" = "firebrick2", "Hypomethylated" = "steelblue")) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "gray40") +
   labs(
-    title = "CpGs Contributing to Age Prediction (Hypo vs Hypermethylated)",
+    title = "Top 20 CpGs for Age Prediction",
     x = "CpG sites",
     y = "Elastic Net Coefficient (Weight)",
     fill = "Methylation Change"
@@ -237,24 +236,27 @@ ggsave("cpgs_hypo_hyper.png", plot = p3, width = 12, height = 10, dpi = 150)
 
 
 
-Select top 50cpgs and save in a CSV file
+Select top 20cpgs and save in a CSV file
 
 
 ```{r}
-all_coef <- as.matrix(coef(enet_model))
-coef_df_full <- data.frame(
-  CpG = rownames(all_coef),
-  Weight = as.numeric(all_coef)
-)
-top50_cpgs <- coef_df_full %>%
-  filter(grepl("^cg", CpG)) %>%              
-  arrange(desc(abs(Weight))) %>%            
-  head(50) %>%
+# Extract coefficients from cv.glmnet at lambda.min
+coef_mat <- coef(cv_enet, s = "lambda.min")
+
+# Convert to tidy data frame 
+top20_cpgs <- as.data.frame(as.matrix(coef_mat)) %>%
+  rownames_to_column("CpG") %>%
+  rename(Weight = !!colnames(.)[2]) %>%   
+  filter(CpG != "(Intercept)" & !grepl("^gender", CpG)) %>%  # exclude gender
+  arrange(desc(abs(Weight))) %>%
+  slice(1:20) %>%
   mutate(Methylation_Change = ifelse(Weight > 0,
                                      "Hypermethylated",
                                      "Hypomethylated"))
-write.csv(top50_cpgs %>% select(CpG, Weight, Methylation_Change),
-          "Top50_CpGs.csv",
+
+# Save to CSV
+write.csv(dplyr::select(top20_cpgs, CpG, Weight, Methylation_Change),
+          "Top20_CpGs.csv",
           row.names = FALSE)
 ```
 
