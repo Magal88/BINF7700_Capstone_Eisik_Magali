@@ -160,7 +160,7 @@ kegg_results %>%
 
 ```
 
-Save results of KEGG analysis in CSV file
+Save results of KEGG analysis in CSV files
 
 ```{r}
 # Hypermethylated
@@ -187,5 +187,45 @@ kegg_results <- kegg_results[order(kegg_results$Adjusted_PValue), ]
 # Save to CSV
 write.csv(kegg_results, "KEGG_Pathways_Methylation.csv", row.names = FALSE)
 
+```
+
+Gene names
+
+```{r}
+final_cpg_genes <- annotated_cpgs %>%
+  tidyr::separate_rows(UCSC_RefGene_Name, sep = ";") %>%
+  dplyr::rename(Gene = UCSC_RefGene_Name) %>%
+  dplyr::filter(Gene != "") %>%
+  dplyr::select(CpG, Gene, Methylation_Change)
+
+
+final_cpg_genes <- distinct(final_cpg_genes)
+
+write.csv(final_cpg_genes,
+          "C:/Users/Owner/Desktop/BINF7770/Top20_CpGs_Annotated.csv",
+          row.names = FALSE)
+```
+
+
+
+```{r}
+#Display table with genes
+final_cpg_genes %>%
+  head(20) %>%  
+  knitr::kable(
+    format = "html",
+    caption = "<b style='text-align:center;'>Annotated Top 20 CpGs with Associated Genes</b>",
+    align = "c",
+    col.names = c("CpG Site", "Associated Gene", "Methylation Status")
+  ) %>%
+  kableExtra::kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover", "condensed"),
+    position = "center",
+    font_size = 13
+  ) %>%
+  kableExtra::column_spec(3, bold = TRUE, color = "white",
+                          background = ifelse(final_cpg_genes$Methylation_Change == "Hypermethylated",
+                                              "#E74C3C", "#2E86C1"))
 ```
 
