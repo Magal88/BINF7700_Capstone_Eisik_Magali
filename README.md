@@ -119,6 +119,7 @@ conda activate geo_env
 - FoxoTech. (2023). *methylprep*. GitHub repository.  Available at: [https://github.com/FoxoTech/methylprep](https://github.com/FoxoTech/methylprep)
 - [GEOparse](https://geoparse.readthedocs.io/en/latest/GEOparse.html) GEOparse documentation.
 - [ggplot2 Documentation](https://ggplot2.tidyverse.org/) - A tool for data visualization in R.
+- James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An Introduction to Statistical Learning: with Applications in R. Springer. Available at: [https://www.statlearning.com)
 - Lundberg, S. M., & Lee, S.-I. (n.d.). SHAP: A game theoretic approach to explain the output of any machine learning model. GitHub repository. Available at: [https://github.com/shap/shap)
 - MarineGenomicsLab. (n.d.). *Marine Genomics Lab*. GitHub repository. Available at: [https://github.com/marinegenomicslab](https://github.com/marinegenomicslab)
 - ModelOriented. (n.d.). shapviz. GitHub repository. Available at: [https://github.com/ModelOriented/shapviz)
