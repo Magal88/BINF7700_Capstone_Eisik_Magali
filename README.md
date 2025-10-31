@@ -3,7 +3,7 @@
 This repository contains the final capstone project for the MSc in Bioinformatics at Northeastern University.  The goal of this project is to share its content, including scripts (R Markdown and Jupyter Notebooks), datasets, and results, to provide a reproducible and well-documented analysis methodology.  In addition, this project highlights hands-on applications of Bioinformatics and Computational Biology skills developed in the MSc program.
 
 In this project, an epigenetic clock is constructed using DNA methylation data from GSE55763
-Specifically, two predictive models are implemented: Elastic Net and Random Forest regressions which are used to predict age from high-dimensional CpG data, with SHAP analysis identifying the most influential CpGs for interpretability and biological insights. These CpGs are then annotated and analyzed for pathway enrichment using KEGG and age-related genes from GenAge, providing biological context for the predictions.
+Specifically, two predictive models are implemented: Elastic Net and Random Forest regressions which are used to predict age from high-dimensional CpG data, with SHAP analysis identifying the most influential CpGs for interpretability and biological insights. These CpGs are then annotated and analyzed for pathway enrichment using KEGG, providing biological context for the predictions.
 The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279)
 
 
