@@ -75,7 +75,7 @@ BiocManager::install()
 **Install required CRAN packages**
 
 install.packages(c(
-  "ggplot2", "dplyr", "tidyr",  "tibble",  
+  "ggplot2", "dplyr", "tidyr",  "tibble",  "KableExtra"
   "gridExtra", "factoextra", "FactoMineR", "glmnet", "randomForest","clusterProfiler","KEGGREST"
 ))
 
