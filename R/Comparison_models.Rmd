@@ -1,0 +1,176 @@
+---
+title: "Comparison between Machine Learning models"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+#Load required packages
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+```
+
+```{r}
+#Save metrics of each models in a data frame
+metrics_models <- data.frame(
+  Model = c("Elastic Net", "Random Forest"),
+  R2 = c(0.84, 0.60),
+  MAE = c(3.19, 5.03),
+  RMSE = c(4.08, 6.19)
+)
+# Display table
+metrics_models %>%
+  kbl(
+    caption = "<b style='text-align:center;'>Performance Metrics for Machine Learning Models</b>",
+    align = "c",
+    escape = FALSE  
+  ) %>%
+  kable_styling(
+    full_width = FALSE,
+    position = "center",
+    bootstrap_options = c("striped", "hover")
+  )
+```
+
+```{r}
+#Load datasets with predicted age
+rf_pred <- read.csv("RF_Predicted_Ages.csv", header = TRUE)
+enet_pred <- read.csv("ENet_Predicted_Ages.csv", header = TRUE)
+
+#Verify dimensions and first 3 rows
+dim(rf_pred)
+dim(enet_pred)
+head(rf_pred,3)
+head(enet_pred,3)
+```
+
+```{r}
+#Merged data frames
+pred_comparison <- merge(rf_pred, enet_pred, by = "SampleID", suffixes = c("_RF", "_ENet"))
+pred_comparison$Observed_Age <- pred_comparison$Observed_Age_RF
+
+head(pred_comparison,3)
+#convert variables to numeric
+pred_comparison$Pred_RF   <- as.numeric(as.character(pred_comparison$Pred_RF))
+pred_comparison$Pred_ENet <- as.numeric(as.character(pred_comparison$Pred_ENet))
+
+pred_comparison$Mean_Diff <- pred_comparison$Pred_RF - pred_comparison$Pred_ENet
+pred_comparison$Mean_Pred <- (pred_comparison$Pred_RF + pred_comparison$Pred_ENet)/2
+
+# Calcular estadísticas Bland–Altman
+mean_diff   <- mean(pred_comparison$Mean_Diff)
+sd_diff     <- sd(pred_comparison$Mean_Diff)
+upper_limit <- mean_diff + 1.96 * sd_diff
+lower_limit <- mean_diff - 1.96 * sd_diff
+
+```
+
+```{r}
+ggplot(pred_comparison, aes(x = Mean_Pred, y = Mean_Diff)) +
+  geom_point(alpha = 0.7, color = "#56B4E9", size = 2.5) +  
+  geom_hline(yintercept = mean_diff, color = "#e31a1c", linetype = "dashed", size = 1) + 
+  geom_hline(yintercept = upper_limit, color = "#33a02c", linetype = "dotdash", size = 0.9) + 
+  geom_hline(yintercept = lower_limit, color = "#33a02c", linetype = "dotdash", size = 0.9) +
+  annotate("text", x = min(pred_comparison$Mean_Pred), 
+           y = max(pred_comparison$Mean_Diff),
+           label = sprintf("Mean Diff = %.2f\nUpper = %.2f\nLower = %.2f", 
+                           mean_diff, upper_limit, lower_limit),
+           hjust = 0, vjust = 1, size = 4, color = "black") +
+  labs(
+    title = "Bland–Altman Plot: Random Forest vs Elastic Net",
+    x = "Mean Predicted Age",
+    y = "Difference (RF - ENet)"
+  ) +
+  theme_minimal()
+
+
+
+```
+
+```{r}
+#Save image in png format
+p1<- ggplot(pred_comparison, aes(x = Mean_Pred, y = Mean_Diff)) +
+  geom_point(alpha = 0.7, color = "#56B4E9", size = 2.5) +  
+  geom_hline(yintercept = mean_diff, color = "#e31a1c", linetype = "dashed", size = 1) + 
+  geom_hline(yintercept = upper_limit, color = "#33a02c", linetype = "dotdash", size = 0.9) + 
+  geom_hline(yintercept = lower_limit, color = "#33a02c", linetype = "dotdash", size = 0.9) +
+  annotate("text", x = min(pred_comparison$Mean_Pred), 
+           y = max(pred_comparison$Mean_Diff),
+           label = sprintf("Mean Diff = %.2f\nUpper = %.2f\nLower = %.2f", 
+                           mean_diff, upper_limit, lower_limit),
+           hjust = 0, vjust = 1, size = 4, color = "black") +
+  labs(
+    title = "Bland–Altman Plot: Random Forest vs Elastic Net",
+    x = "Mean Predicted Age",
+    y = "Difference (RF - ENet)"
+  ) +
+  theme_minimal()
+ggsave("Bland_Altman_Plot.png", plot = p1, width = 12, height = 10, dpi = 150)
+```
+
+
+
+
+Correlation
+
+```{r}
+#check assumptions
+#Linearity
+# Elasticnet model
+plot(pred_comparison$Observed_Age, pred_comparison$Pred_ENet,
+     main = "Observed vs Predicted Age - ElasticNet)",
+     xlab = "Observed Age",
+     ylab = "Predicted Age ",
+     pch = 19, col = "steelblue")
+abline(lm(Pred_ENet ~ Observed_Age, data = pred_comparison), col = "coral1", lwd = 2)
+#Random forest
+plot(pred_comparison$Observed_Age, pred_comparison$Pred_RF,
+     main = "Observed vs Predicted Age- Random Forest",
+     xlab = "Observed Age",
+     ylab = "Predicted Age ",
+     pch = 19, col = "steelblue")
+abline(lm(Pred_RF ~ Observed_Age, data = pred_comparison), col = "coral1", lwd = 2)
+```
+
+
+```{r}
+# Normality of residuals
+# Residuals
+resid_rf <- pred_comparison$Observed_Age - pred_comparison$Pred_RF
+resid_enet <- pred_comparison$Observed_Age - pred_comparison$Pred_ENet
+
+# Shapiro-Wilk test
+shapiro.test(resid_rf)     
+shapiro.test(resid_enet)   
+
+# QQ plots
+qqnorm(resid_rf); qqline(resid_rf, col="coral1")
+qqnorm(resid_enet); qqline(resid_enet, col="coral1")
+```
+
+In this case, Spearman correlation is used to assess the relationship between predicted and observed ages.
+
+```{r warning=FALSE,message=FALSE}
+# RF Spearman
+rf_spearman <- cor.test(pred_comparison$Observed_Age, pred_comparison$Pred_RF, method = "spearman")
+
+# ENet Spearman
+enet_spearman <- cor.test(pred_comparison$Observed_Age, pred_comparison$Pred_ENet, method = "spearman")
+
+rho_rf <- as.numeric(rf_spearman$estimate)
+pval_rf <- as.numeric(rf_spearman$p.value)
+
+rho_enet <- as.numeric(enet_spearman$estimate)
+pval_enet <- as.numeric(enet_spearman$p.value)
+
+
+pval_rf_text <- ifelse(pval_rf < 2.2e-16, "< 2.2e-16", format(pval_rf, scientific = TRUE))
+pval_enet_text <- ifelse(pval_enet < 2.2e-16, "< 2.2e-16", format(pval_enet, scientific = TRUE))
+
+
+cat("Spearman correlation (RF): rho =", round(rho_rf,3), ", p-value =", pval_rf_text, "\n")
+cat("Spearman correlation (ENet): rho =", round(rho_enet,3), ", p-value =", pval_enet_text, "\n")
+```
+
