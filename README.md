@@ -44,6 +44,9 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
   
 ## Repository structure
 
+**Scripts**
+
+
 **Python**
 
 - Scripts (.py)
