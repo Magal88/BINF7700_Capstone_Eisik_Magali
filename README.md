@@ -76,7 +76,7 @@ BiocManager::install()
 
 install.packages(c(
   "ggplot2", "dplyr", "tidyr",  "tibble",  "KableExtra"
-  "gridExtra", "factoextra", "FactoMineR", "glmnet", "randomForest","clusterProfiler","KEGGREST"
+  "gridExtra", "factoextra", "FactoMineR", "glmnet", "blandr","randomForest","clusterProfiler","KEGGREST"
 ))
 
 **Python**
