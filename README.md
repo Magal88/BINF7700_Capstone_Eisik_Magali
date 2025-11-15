@@ -18,12 +18,13 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 
 ## **Computational & Analytical Skills**
 
-- **R**: R Notebooks (.Rmd) 
+- **R**: R Notebooks (.Rmd) , scripts (.R)
 - **Python**: Jupyter Notebooks (.ipynb), scripts (.py) 
 
 **Statistics & Modeling**
 
 - Descriptive statistics.
+- Correlation analyses.
 - Machine learning algorithms: ElasticNet, Random Forest.
 
 **Bioinformatics Tools**
