@@ -29,7 +29,7 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 **Bioinformatics Tools**
 
 - Biological data analysis: Biopython, Bioconductor.
-- Enrichment Tools: GenAge, KEGG.
+- Enrichment Tools: KEGG.
 
 **Visualization & Reporting**
 
