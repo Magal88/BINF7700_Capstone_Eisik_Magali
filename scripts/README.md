@@ -3,7 +3,7 @@ The scripts/ directory is organized into four subfolders, each representing a sp
 1) **data_processing:**
 Cleaning and restructuring of raw GEO and beta-value data, including extraction, formatting, and reading in chunks for initial quality processing.
 
-       Packages: GEOparse, glob, numpy, pandas (Python)
+   Packages: GEOparse, glob, numpy, pandas (Python)
 
 2) **data_preparation:**
 Preparation of cleaned data for modeling.
