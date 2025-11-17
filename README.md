@@ -18,12 +18,12 @@ flowchart TD
         C[Merged Dataset - Beta/M-values - Top 500 CpGs]
     end
 
-    subgraph ML ["Machine Learning"]
+    subgraph ML ["Modeling & Feature Selection"]
         D[Elastic Net]
         E[Random Forest + SHAP]
     end
 
-    subgraph Eval ["Evaluation"]
+    subgraph Eval ["Model Assessment"]
         F[Model Comparison - Bland-Altman, R2, MAE, RMSE]
         G[Model Selection]
     end
