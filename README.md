@@ -6,22 +6,23 @@ In this project, an epigenetic clock is constructed using DNA methylation data f
 Specifically, two predictive models are implemented: Elastic Net and Random Forest regressions which are used to predict age from high-dimensional CpG data, with SHAP analysis identifying the most influential CpGs for interpretability and biological insights. These CpGs are then annotated and analyzed for pathway enrichment using KEGG, providing biological context for the predictions.
 The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279)
 
-## Workflow
-````mermaid
+```mermaid
 flowchart TD
-
-    subgraph Prep ["Data Preparation"]
+    subgraph Input ["Input Data"]
         A[Normalized Beta Values]
         B[SOFT File Metadata]
-        C[Merged Dataset - Top 500 CpGs]
     end
 
-    subgraph Modeling ["Predictive Modeling & Feature Selection"]
+    subgraph Prep ["Data Preparation"]
+        C[Merged Dataset - Beta/M-values - Top 500 CpGs]
+    end
+
+    subgraph Modeling ["Predictive Modeling"]
         D[Elastic Net]
         E[Random Forest + SHAP]
     end
 
-    subgraph Assessment ["Model Assessment"]
+    subgraph Evaluation ["Model Evaluation"]
         F[Model Comparison - Bland-Altman, R2, MAE, RMSE]
         G[Model Selection]
     end
@@ -40,6 +41,12 @@ flowchart TD
     F --> G
     G --> H
     H --> I
+
+    style Input fill:#e3f2fd
+    style Prep fill:#fff9c4
+    style Modeling fill:#f3e5f5
+    style Evaluation fill:#c8e6c9
+    style Analysis fill:#fce4ec
 ```
 
 ## Learning Goals for the Course
