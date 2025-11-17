@@ -43,10 +43,10 @@ flowchart TD
     H --> I
 
     style Input fill:#e3f2fd
-    style Prep fill:#fff9c4
-    style Modeling fill:#f3e5f5
-    style Evaluation fill:#c8e6c9
-    style Analysis fill:#fce4ec
+    style Prep fill:#e3f2fd
+    style Modeling fill:#e3f2fd
+    style Evaluation fill:#e3f2fd
+    style Analysis fill:#e3f2fd
 ```
 
 ## Learning Goals for the Course
