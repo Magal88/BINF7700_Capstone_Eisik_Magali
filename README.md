@@ -9,26 +9,26 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 ## Workflow
 ```mermaid
 flowchart TD
-    subgraph Input ["📥 Input Data"]
+    subgraph Input ["Input Data"]
         A[Normalized Beta Values]
-        B[SOFT FileMetadata]
+        B[SOFT File (Metadata)]
     end
     
-    subgraph Prep ["🔧 Data Preparation"]
-        C[Merged DatasetBeta/M-valuesTop 500 CpGs]
+    subgraph Prep ["Data Preparation"]
+        C[Merged DatasetBeta/M-values (Top 500 CpGs)]
     end
     
-    subgraph ML ["🤖 Machine Learning"]
+    subgraph ML ["Machine Learning"]
         D[Elastic Net]
         E[Random Forest + SHAP]
     end
     
-    subgraph Eval ["📊 Evaluation"]
-        F[Model ComparisonR², MAE, RMSE]
+    subgraph Eval ["Evaluation"]
+        F[Model Comparison (Bland–Altman plot s, Metrics: R², MAE, RMSE]
         G[Model Selection]
     end
     
-    subgraph Analysis ["🔬 Downstream Analysis"]
+    subgraph Analysis ["Downstream Analysis"]
         H[CpG Annotation]
         I[KEGG PathwayEnrichment]
     end
