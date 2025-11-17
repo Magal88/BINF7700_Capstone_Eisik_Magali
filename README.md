@@ -14,7 +14,7 @@ flowchart TD
     end
 
     subgraph Prep ["Data Preparation"]
-        C[Merged Dataset - Beta/M-values - Top 500 CpGs]
+        C[Dataset - Beta/M-values - Top 500 CpGs]
     end
 
     subgraph Modeling ["Predictive Modeling"]
@@ -23,7 +23,7 @@ flowchart TD
     end
 
     subgraph Evaluation ["Model Evaluation"]
-        F[Model Comparison - Bland-Altman, R2, MAE, RMSE]
+        F[Model Comparison - Bland-Altman. Metrics: R2, MAE, RMSE]
         G[Model Selection]
     end
 
