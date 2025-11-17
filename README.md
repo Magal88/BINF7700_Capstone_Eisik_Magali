@@ -15,7 +15,7 @@ flowchart TD
     end
 
     subgraph Prep ["Data Preparation"]
-        C[Merged Dataset: Beta/M-values (Top 500 CpGs)]
+        C[Merged Dataset - Beta/M-values - Top 500 CpGs]
     end
 
     subgraph ML ["Machine Learning"]
@@ -24,7 +24,7 @@ flowchart TD
     end
 
     subgraph Eval ["Evaluation"]
-        F[Model Comparison: Bland-Altman, R2, MAE, RMSE]
+        F[Model Comparison - Bland-Altman, R2, MAE, RMSE]
         G[Model Selection]
     end
 
@@ -48,6 +48,7 @@ flowchart TD
     style ML fill:#f3e5f5
     style Eval fill:#c8e6c9
     style Analysis fill:#fce4ec
+```
 
 
 ## Learning Goals for the Course
