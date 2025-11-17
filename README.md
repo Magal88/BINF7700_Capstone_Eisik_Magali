@@ -7,31 +7,32 @@ Specifically, two predictive models are implemented: Elastic Net and Random Fore
 The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279)
 
 ## Workflow
+```mermaid
 flowchart TD
     subgraph Input ["Input Data"]
         A[Normalized Beta Values]
         B[SOFT File Metadata]
     end
-    
+
     subgraph Prep ["Data Preparation"]
         C[Merged Dataset: Beta/M-values (Top 500 CpGs)]
     end
-    
+
     subgraph ML ["Machine Learning"]
         D[Elastic Net]
         E[Random Forest + SHAP]
     end
-    
+
     subgraph Eval ["Evaluation"]
         F[Model Comparison: Bland-Altman, R2, MAE, RMSE]
         G[Model Selection]
     end
-    
+
     subgraph Analysis ["Downstream Analysis"]
         H[CpG Annotation]
         I[KEGG Pathway Enrichment]
     end
-    
+
     A --> C
     B --> C
     C --> D
