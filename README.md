@@ -10,7 +10,7 @@ The DNA methylation data used in this analysis was obtained from the Gene Expres
 flowchart TD
     subgraph Input ["Input Data"]
         A[Normalized Beta Values]
-        B[SOFT File Metadata]
+        B[SOFT File ]
     end
 
     subgraph Prep ["Data Preparation"]
