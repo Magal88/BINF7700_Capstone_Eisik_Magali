@@ -24,7 +24,7 @@ flowchart TD
     end
 
     subgraph Evaluation ["Model Evaluation"]
-        F[Model Comparison - Bland-Altman. Metrics: R2, MAE, RMSE]
+        F[Model Comparison  Bland-Altman.  Metrics: R2, MAE, RMSE]
         G[Model Selection]
     end
 
