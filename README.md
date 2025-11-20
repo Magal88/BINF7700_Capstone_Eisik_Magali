@@ -15,7 +15,7 @@ flowchart TD
     end
 
     subgraph Prep ["Data Preparation"]
-        C[Dataset - Beta/M-values - Top 500 CpGs]
+        C[Dataset - Beta/M-values ]
     end
 
     subgraph Modeling ["Predictive Modeling"]
