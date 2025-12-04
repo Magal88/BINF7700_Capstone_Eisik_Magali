@@ -1,0 +1,354 @@
+---
+title: "Downstream analysis"
+author: "Magali Eisik"
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+---
+
+```{r warning=FALSE,message=FALSE}
+#Load require libraries
+library(dplyr)      # Data manipulation
+library(tidyr)      # Data cleaning / tidying
+library(ggplot2)    # Data visualization
+library(kableExtra) # Table formatting
+library(knitr)      # Reporting tools
+library(IlluminaHumanMethylation450kanno.ilmn12.hg19) # CpG annotation
+library(clusterProfiler) # Pathway enrichment
+library(org.Hs.eg.db)    # Gene IDs
+library(enrichplot)      # Enrichment plots
+library(readr)      # Read data
+library(patchwork)  # Combine plots
+library(kableExtra) # Table formatting
+```
+
+```{r}
+#Read csv file with top20cpgs 
+top_cpgs <- read.csv("Top20_CpGs_ElasticNet.csv", 
+                     stringsAsFactors = FALSE)
+#See first 3 rows
+head(top_cpgs,3)
+```
+
+## Separate Cpgs by methylation status
+
+```{r}
+hyper_cpgs <- top_cpgs$CpG[top_cpgs$Methylation_Change == "Hypermethylated"]
+hypo_cpgs <- top_cpgs$CpG[top_cpgs$Methylation_Change == "Hypomethylated"]
+
+df_cpgs_met <- data.frame(
+  CpG = c(hyper_cpgs, hypo_cpgs),
+  Status = c(
+    rep("Hypermethylated", length(hyper_cpgs)),
+    rep("Hypomethylated", length(hypo_cpgs))
+  )
+)
+
+df_cpgs_met %>%
+  knitr::kable(
+    format = "latex",
+    escape = FALSE,
+    booktabs = TRUE,
+    caption = "CpG Sites by Methylation Status"
+  ) %>%
+  kableExtra::kable_styling(
+    latex_options = c("striped", "hold_position")
+  )
+```
+
+## CpG Annotation
+
+```{r}
+# The Illumina 450k annotation is loaded and converted 
+#into a data frame to map each CpG site to its associated genomic information
+ann450k <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+ann450k_df <- as.data.frame(ann450k)
+```
+
+## Mapping CpG Sites to Their Associated Genes
+
+```{r}
+# Merge top CpGs with gene names
+annotated_cpgs <- top_cpgs %>%
+  left_join(ann450k_df[, c("Name", "UCSC_RefGene_Name")],
+            by = c("CpG" = "Name"))
+annotated_cpgs  
+#UCSC_RefGene_Name contains the gene(s) associated with each CpG site 
+#according to the UCSC RefGene annotation 
+
+
+# Split multiple genes per CpG
+df_annotation <- annotated_cpgs %>%
+  tidyr::separate_rows(UCSC_RefGene_Name, sep = ";") %>%
+  dplyr::rename(Gene = UCSC_RefGene_Name) %>%
+  dplyr::filter(Gene != "") %>%
+  dplyr::select(Methylation_Change, Gene)
+
+```
+
+## Gene Conversion for KEGG Analysis
+
+```{r message=FALSE,warning=FALSE}
+
+#separates genes by methylation status and converts 
+#their symbols into ENTREZ IDs for downstream pathway enrichment analysis. 
+
+# Hypermethylated 
+hyper_genes <- unique(df_annotation$Gene[df_annotation$Methylation_Change == "Hypermethylated"])
+hyper_ids <- bitr(hyper_genes, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)  #converts gene symbols to ENTREZ IDs using the human gene database
+# OrgDb = org.Hs.eg.db--> homo sapiens data base
+# Hypomethylated 
+hypo_genes <- unique(df_annotation$Gene[df_annotation$Methylation_Change == "Hypomethylated"])
+hypo_ids <- bitr(hypo_genes, fromType = "SYMBOL",
+                 toType = "ENTREZID", OrgDb = org.Hs.eg.db)
+```
+
+## KEGG Enrichment Analysis by Methylation Status
+
+
+KEGG pathway enrichment analysis was performed on the ENTREZ IDs of genes associated with hyper- and hypomethylated CpGs, identifying significantly overrepresented biological pathways with adjusted p-values, gene counts, and lists of contributing genes for each pathway
+
+```{r}
+
+
+# KEGG for hypermethylated
+hyper_kegg <- enrichKEGG(gene = hyper_ids$ENTREZID, organism = 'hsa', pvalueCutoff = 0.05)
+
+# KEGG for hypomethylated
+hypo_kegg <- enrichKEGG(gene = hypo_ids$ENTREZID, organism = 'hsa', pvalueCutoff = 0.05)
+
+#organism = 'hsa'--> homo sapiens
+#pvalueCutoff = 0.05 →  only significantly enriched pathways whose p-value< 0.05 are considered.
+```
+
+## Data visualization
+
+#Cnetplots (Category-Net Plot)
+
+```{r warning=FALSE,message=FALSE}
+cnetplot(hyper_kegg, showCategory = min(5, nrow(hyper_kegg)))
+cnetplot(hypo_kegg, showCategory = min(5, nrow(hypo_kegg)))
+
+```
+
+The cnetplots reveal the relationship between genes and pathways, which are significantly enriched for hypermethylated and hypomethylated gene sets. According to the first cnetplot (hypermethylated genes), the most represented pathways include the cytoskeleton in muscle cells and type II diabetes mellitus. In the second plot, hypomethylated genes are concentrated in signaling and metabolic pathways, such as the phosphatidylinositol signaling system and inositol phosphate metabolism
+
+## Dotplots
+
+```{r}
+prepare_top_kegg <- function(enrich_obj, top_n = 10) {
+  enrich_obj@result %>%
+    mutate(
+      ID = as.character(ID),
+      Description = as.character(Description),
+      Count = as.numeric(Count),
+      p.adjust = as.numeric(p.adjust)
+    ) %>%
+    arrange(p.adjust) %>%
+    slice(1:top_n)
+}
+
+
+# Prepare top pathways
+
+top_hyper <- prepare_top_kegg(hyper_kegg, top_n = 10)
+top_hypo  <- prepare_top_kegg(hypo_kegg, top_n = 10)
+
+
+# Create dotplot for hypermethylated CpGs
+
+p_hyper <- ggplot(top_hyper, aes(x = reorder(Description, Count), y = Count)) +
+  geom_point(aes(size = Count, color = -log10(p.adjust))) +
+  coord_flip() +
+  scale_color_gradient(low = "blue", high = "red") +
+  scale_size_continuous(range = c(4, 10)) +  # Larger points
+  labs(
+    title = "KEGG Enriched Pathways (Hypermethylated CpGs)",
+    x = "", 
+    y = "Gene Count", 
+    color = "-log10(adj p)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.y = element_text(size = 10)
+  )
+
+
+# Create dotplot for hypomethylated CpGs
+
+p_hypo <- ggplot(top_hypo, aes(x = reorder(Description, Count), y = Count)) +
+  geom_point(aes(size = Count, color = -log10(p.adjust))) +
+  coord_flip() +
+  scale_color_gradient(low = "blue", high = "red") +
+  scale_size_continuous(range = c(4, 10)) +
+  labs(
+    title = "KEGG Enriched Pathways (Hypomethylated CpGs)",
+    x = "", 
+    y = "Gene Count", 
+    color = "-log10(adj p)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.y = element_text(size = 10)
+  )
+
+
+ggsave("KEGG_Hypermethylated.png", plot = p_hyper, width = 10, height = 8, dpi = 300)
+ggsave("KEGG_Hypomethylated.png", plot = p_hypo, width = 10, height = 8, dpi = 300)
+
+ggplot(top_hyper, aes(x = reorder(Description, Count), y = Count)) +
+  geom_point(aes(size = Count, color = -log10(p.adjust))) +
+  coord_flip() +
+  scale_color_gradient(low = "blue", high = "red") +
+  scale_size_continuous(range = c(4, 10)) +  # Larger points
+  labs(
+    title = "KEGG Enriched Pathways (Hypermethylated CpGs)",
+    x = "", 
+    y = "Gene Count", 
+    color = "-log10(adj p)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.y = element_text(size = 10)
+  )
+
+
+ggplot(top_hypo, aes(x = reorder(Description, Count), y = Count)) +
+  geom_point(aes(size = Count, color = -log10(p.adjust))) +
+  coord_flip() +
+  scale_color_gradient(low = "blue", high = "red") +
+  scale_size_continuous(range = c(4, 10)) +
+  labs(
+    title = "KEGG Enriched Pathways (Hypomethylated CpGs)",
+    x = "", 
+    y = "Gene Count", 
+    color = "-log10(adj p)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.y = element_text(size = 10)
+  )
+
+```
+
+The dot plots illustrate pathway-specific methylation changes. Hypermethylated CpGs are mainly enriched in pathways such as Cytoskeleton in muscle cells and Type II diabetes mellitus , whereas hypomethylated CpGs are enriched in Inositol phosphate metabolism and Phosphatidylinositol signaling system. Dot size corresponds to the number of genes in each pathway, color represents statistical significance (FDR), and gene ratio indicates the proportion of input genes associated with each pathway. These findings indicate that methylation changes selectively impact biological pathways, potentially repressing some while activating others.
+
+## KEGG Pathway Enrichment and CpG Annotation by Methylation Status
+
+```{r}
+# Table with hyperlinks to KEGG pathways
+# Hyper-methylated
+hyper_table <- hyper_kegg@result
+hyper_table$Methylation_Status <- "Hypermethylated"
+
+# Hypo-methylated
+hypo_table <- hypo_kegg@result
+hypo_table$Methylation_Status <- "Hypomethylated"
+
+# Combine tables
+kegg_results <- rbind(
+  hyper_table[, c("Description", "ID", "pvalue", "p.adjust", "Methylation_Status")],
+  hypo_table[, c("Description", "ID", "pvalue", "p.adjust", "Methylation_Status")]
+)
+
+# Rename columns
+colnames(kegg_results) <- c("Pathway_Name", "KEGG_ID", "PValue", "Adjusted_PValue", "Methylation_Status")
+
+
+kegg_results <- kegg_results %>%
+  mutate(KEGG_Link = paste0("https://www.kegg.jp/dbget-bin/www_bget?", KEGG_ID))
+
+
+kegg_results <- kegg_results %>%
+  mutate(Pathway_Name_LaTeX = paste0("\\href{", KEGG_Link, "}{", Pathway_Name, "}"))
+
+
+kegg_results %>%
+  dplyr::select(Pathway_Name_LaTeX, PValue, Adjusted_PValue, Methylation_Status) %>%
+  knitr::kable(format = "latex", escape = FALSE, booktabs = TRUE,
+               caption = "KEGG Pathways Enriched by Methylation Status",
+               col.names = c("Pathway", "P-value", "Adjusted P-value", "Methylation Status"),
+               align = "c") %>%
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE)
+```
+
+## Save results of KEGG analysis in CSV files
+
+```{r}
+# Hypermethylated
+hyper_table <- hyper_kegg@result
+hyper_table$Methylation_Status <- "Hypermethylated"
+
+# Hypomethylated
+hypo_table <- hypo_kegg@result
+hypo_table$Methylation_Status <- "Hypomethylated"
+
+# Combine tables
+kegg_results <- rbind(
+  hyper_table[, c("Description", "ID", "pvalue", "p.adjust", "Methylation_Status")],
+  hypo_table[, c("Description", "ID", "pvalue", "p.adjust", "Methylation_Status")]
+)
+
+# Rename columns
+colnames(kegg_results) <- c(
+  "Pathway_Name", "KEGG_ID", "PValue", "Adjusted_PValue", "Methylation_Status")
+
+# Create KEGG link column
+kegg_results$KEGG_Link <- paste0("https://www.kegg.jp/dbget-bin/www_bget?", kegg_results$KEGG_ID)
+kegg_results <- kegg_results[order(kegg_results$Adjusted_PValue), ]
+
+# Save to CSV
+write.csv(kegg_results, "KEGG_Pathways_Methylation.csv", row.names = FALSE)
+
+
+#Gene names
+
+final_cpg_genes <- annotated_cpgs %>%
+  tidyr::separate_rows(UCSC_RefGene_Name, sep = ";") %>%
+  dplyr::rename(Gene = UCSC_RefGene_Name) %>%
+  dplyr::filter(Gene != "") %>%
+  dplyr::select(CpG, Gene, Methylation_Change)
+
+
+final_cpg_genes <- distinct(final_cpg_genes)
+
+write.csv(final_cpg_genes,
+          "Top20_CpGs_Annotated.csv",
+          row.names = FALSE)
+#Save csv
+
+```
+
+## Annotated CpGs with Associated Genes and Methylation Status
+
+```{r}
+#Display table with genes
+cpgs_display <- final_cpg_genes %>% head(20)
+
+cpgs_display %>%
+  head(20) %>%
+  knitr::kable(
+    format = "latex",
+    booktabs = TRUE,
+    caption = "CpG Sites with Associated Genes and Methylation Status",
+    col.names = c("CpG Site", "Associated Gene", "Methylation Status"),
+    align = "c",
+    escape = TRUE
+  ) %>%
+  kableExtra::kable_styling(
+    latex_options = c("striped", "hold_position"),
+    font_size = 11,
+    full_width = FALSE
+  )
+cpgs_display %>%
+  knitr::kable(format = "latex", escape = FALSE, booktabs = TRUE,
+               caption = "Annotated Top 20 CpGs with Associated Genes and Methylation Status",
+               col.names = c("CpG Site", "Associated Gene", "Methylation Status"),
+               align = "c") %>%
+  kable_styling(latex_options = c("striped", "hold_position"), font_size = 10)
+```
