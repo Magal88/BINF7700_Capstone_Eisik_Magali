@@ -1,0 +1,122 @@
+---
+title: "Bland Altman Analysis"
+author: "Magali Eisik"
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+---
+
+
+```{r message=FALSE,warning=FALSE}
+#Load required packages
+library(knitr) # for dynamic reports
+library(kableExtra) # for style tables
+library(ggplot2) # Data visualization
+library(blandr) #Bland-Altman plots
+
+```
+
+## Performance Metrics
+
+```{r}
+metrics_models <- data.frame(
+Model = c("Elastic Net", "Random Forest"),
+R2 = c(0.82, 0.60),
+MAE = c(3.50, 5.03),
+RMSE = c(4.46, 6.19)
+)
+
+#Display table
+
+metrics_models %>%
+kbl(
+caption = "Performance Metrics for Machine Learning Models",
+align = "c",
+booktabs = TRUE
+) %>%
+kable_styling(
+full_width = FALSE,
+position = "center",
+latex_options = c("striped", "hold_position")
+)
+```
+
+## Bland-Altman Analysis
+
+
+```{r}
+#Load datasets with predicted ages
+#Predicted ages from Random forest
+rf_pred <- read.csv("RF_Predicted_Ages.csv", header = TRUE)
+#Predicted ages from Elastic Net
+enet_pred <- read.csv("ENet_Predicted_Ages.csv", header = TRUE)
+
+#Verify dimensions and first rows
+dim(rf_pred)
+dim(enet_pred)
+head(rf_pred,3)
+head(enet_pred,3)
+
+#Combine predictions into one data frame
+pred_comparison <- merge(
+  rf_pred[, c("SampleID", "Observed_Age", "Pred_RF")],
+  enet_pred[, c("SampleID", "Pred_ENet")],
+  by = "SampleID"
+)
+
+pred_table <- pred_comparison[, c("Observed_Age", "Pred_RF", "Pred_ENet")]
+
+# Display first rows
+head(pred_table,3)
+
+```
+
+
+```{r message=FALSE,warning=FALSE}
+#Bland-Altman Plot: Random Forest vs Elastic Net
+
+p <- blandr.draw(
+pred_table$Pred_RF,
+pred_table$Pred_ENet,
+method1name = "Random Forest",
+method2name = "Elastic Net",
+plotTitle = "Bland-Altman Plot: RF vs ENet Age Predictions"
+)
+
+
+p +
+theme_minimal() +
+theme(
+plot.title = element_text(hjust = 0.5, size=14, face="bold")
+) +
+geom_point(color="steelblue", size=2) +
+geom_hline(yintercept=0, linetype="dashed", color="coral1")
+```
+
+
+
+
+```{r}
+# Bland-Altman statistics
+
+ba_stats <- blandr.statistics(
+pred_comparison$Pred_RF,
+pred_comparison$Pred_ENet
+)
+
+# Print  summary
+print(ba_stats)
+
+```
+
+
+
+Random Forest and Elastic Net models were evaluated for predicting age. The Bland–Altman plot indicated that differences between predicted and observed ages were small and evenly distributed around zero, with a mean difference of –0.04 years and 95% limits of agreement from –6.26 to 6.18 years . A t-test confirmed that the bias was not significant (bias = –0.039, p = 0.529). While both models showed good agreement across the age range, Elastic Net demonstrated superior performance across all evaluated metrics, achieving higher accuracy (R² = 0.82 vs. 0.60) and lower errors (MAE = 3.50 vs. 5.03 years, RMSE = 4.46 vs. 6.19 years) compared to Random Forest
+
+
+## References
+
+- Bland, J. M. (2020). blandr: Bland-Altman Method Comparison Analyses. R package version 1.0.2. 
+Available at: https://cran.r-project.org/package=blandr
+
