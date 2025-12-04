@@ -352,3 +352,47 @@ cpgs_display %>%
                align = "c") %>%
   kable_styling(latex_options = c("striped", "hold_position"), font_size = 10)
 ```
+
+
+
+## Summary KEGG Pathways (FDR < 0.05)
+
+```{r warning=FALSE,message=FALSE}
+top_genes_kegg <- rbind(
+  hyper_kegg@result %>% mutate(Methylation_Status = "Hypermethylated"),
+  hypo_kegg@result  %>% mutate(Methylation_Status = "Hypomethylated")
+) %>%
+  dplyr::select(Description, geneID, Methylation_Status, p.adjust) %>%  
+  dplyr::rename(Pathway = Description, Genes = geneID, FDR = p.adjust) %>%
+  dplyr::filter(FDR < 0.05) %>%
+  tidyr::separate_rows(Genes, sep = "/")  
+
+
+top_genes_kegg$Gene_Symbol <- AnnotationDbi::mapIds(
+  org.Hs.eg.db,
+  keys = top_genes_kegg$Genes,
+  column = "SYMBOL",
+  keytype = "ENTREZID",
+  multiVals = "first"
+)
+
+
+top_genes_kegg <- top_genes_kegg %>%
+  dplyr::select(Gene_Symbol, Methylation_Status, Pathway, FDR)
+
+#display table
+
+top_genes_kegg %>%
+dplyr::select(Gene_Symbol, Methylation_Status, Pathway, FDR) %>%
+knitr::kable(
+format = "latex",
+booktabs = TRUE,
+caption = "Genes associated with differentially methylated CpG sites in age-related KEGG pathways",
+digits = 5,
+align = "c"
+)
+
+```
+
+
+
