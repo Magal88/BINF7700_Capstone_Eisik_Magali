@@ -123,7 +123,7 @@ BiocManager::install()
 
 install.packages(c(
   "ggplot2", "dplyr", "tidyr",  "tibble",  "KableExtra"
-  "gridExtra", "factoextra", "FactoMineR", "glmnet", "blandr","randomForest","clusterProfiler","KEGGREST"
+  "gridExtra", "factoextra", "FactoMineR", "glmnet", "blandr","randomForest","clusterProfiler","org.Hs.eg.db","enrichplot","patchwork","IlluminaHumanMethylation450kanno.ilmn12.hg19"
 ))
 
 **Python**
