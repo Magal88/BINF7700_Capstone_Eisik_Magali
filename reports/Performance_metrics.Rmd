@@ -1,0 +1,26 @@
+---
+title: "Performance Metrics"
+author: "Magali Eisik"
+output: pdf_document
+---
+
+
+## Model Performance Metrics
+
+**1. Coefficient of Determination (R²)**
+
+\[
+R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2}
+\]
+
+**2. Mean Absolute Error (MAE)**
+
+\[
+MAE = \frac{1}{n} \sum_{i=1}^{n} |y_i - \hat{y}_i|
+\]
+
+**3. Root Mean Squared Error (RMSE)**
+
+\[
+RMSE = \sqrt{\frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2}
+\]
