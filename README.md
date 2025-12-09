@@ -4,50 +4,51 @@ This repository contains the final capstone project for the MSc in Bioinformatic
 
 In this project, an epigenetic clock is constructed using DNA methylation data from GSE55763
 Specifically, two predictive models are implemented: Elastic Net and Random Forest regressions which are used to predict age from high-dimensional CpG data, with SHAP analysis identifying the most influential CpGs for interpretability and biological insights. These CpGs are then annotated and analyzed for pathway enrichment using KEGG, providing biological context for the predictions.
-The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number [GSE55763](https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE40279)
+The DNA methylation data used in this analysis was obtained from the Gene Expression Omnibus (GEO) under accession number GSE55763.
 The following section presents the workflow implemented in this project:
 
 ```mermaid
 flowchart TD
+    %% Input Data
     subgraph Input ["Input Data"]
-        A[Normalized Beta Values]
-        B[SOFT File ]
+        A[Dataset GSE55763]
     end
 
-    subgraph Prep ["Data Preparation"]
-        C[Dataset - Beta/M-values ]
+    %% Feature selection
+    subgraph FS ["Feature Selection"]
+        B[500 CpGs\nPv < 0.01 (most correlated with age)]
     end
 
+    %% Modeling
     subgraph Modeling ["Predictive Modeling"]
-        D[Elastic Net]
-        E[Random Forest + SHAP]
+        C[Elastic Net]
+        D[Random Forest + SHAP]
     end
 
-    subgraph Evaluation ["Model Evaluation"]
-        F[Model Comparison  Bland-Altman.  Metrics: R2, MAE, RMSE]
-        G[Model Selection]
+    %% Evaluation
+    subgraph Eval ["Model Evaluation"]
+        E[Model Comparison\nR², MAE, RMSE]
     end
 
-    subgraph Analysis ["Downstream Analysis"]
-        H[CpG Annotation]
-        I[KEGG Pathway Enrichment]
+    %% Downstream analysis
+    subgraph Downstream ["Downstream Analysis"]
+        F[CpG Annotation\nKEGG Pathway Enrichment]
     end
 
-    A --> C
+    %% Connections
+    A --> B
     B --> C
-    C --> D
+    B --> D
     C --> E
-    D --> F
+    D --> E
     E --> F
-    F --> G
-    G --> H
-    H --> I
 
-    style Input fill:#e3f2fd
-    style Prep fill:#e3f2fd
-    style Modeling fill:#e3f2fd
-    style Evaluation fill:#e3f2fd
-    style Analysis fill:#e3f2fd
+    %% Styles
+    style Input fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
+    style FS fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
+    style Modeling fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
+    style Eval fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
+    style Downstream fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
 ```
 
 ## Learning Goals for the Course
