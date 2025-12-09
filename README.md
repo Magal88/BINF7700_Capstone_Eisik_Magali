@@ -22,7 +22,7 @@ flowchart TD
 
     %% Model Performance Evaluation
     subgraph Eval [Model Performance Evaluation]
-        E[Comparison: R2, MAE, RMSE]
+        E[Metrics: R2, MAE, RMSE]
     end
 
     ML --> E
