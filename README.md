@@ -9,27 +9,28 @@ The following section presents the workflow implemented in this project:
 
 ```mermaid
 flowchart TD
-    %% Section Titles (no interfieren con flechas)
-    subgraph Title1 [Downstream Analysis (KEGG)]
-    end
-    subgraph Title2 [Model Performance (Metrics: R2, MAE, RMSE)]
-    end
-    subgraph Title3 [Machine Learning Modeling]
-    end
-
     %% Nodes
     A[Dataset GSE55763] --> B[500 CpGs Pv &lt; 0.01]
-    
+
     %% Machine Learning Modeling
-    B --> C[Elastic Net]
-    B --> D[Random Forest + SHAP]
-    
+    subgraph ML [Machine Learning Modeling]
+        C[Elastic Net]
+        D[Random Forest + SHAP]
+    end
+    B --> ML
+
     %% Model Performance
-    C --> E[R2, MAE, RMSE]
+    subgraph Eval [Model Performance]
+        E[R2, MAE, RMSE]
+    end
+    C --> E
     D --> E
 
     %% Downstream Analysis
-    E --> F[CpG Annotation + KEGG Enrichment]
+    subgraph Downstream [Downstream Analysis KEGG]
+        F[CpG Annotation + KEGG Enrichment]
+    end
+    E --> Downstream
 
     %% Styles
     style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
@@ -38,11 +39,6 @@ flowchart TD
     style D fill:#ce93d8,stroke:#512da8,stroke-width:2px
     style E fill:#b39ddb,stroke:#4527a0,stroke-width:2px
     style F fill:#d1c4e9,stroke:#512da8,stroke-width:2px
-
-    %% Section Titles Styles
-    style Title1 fill:none,stroke:none
-    style Title2 fill:none,stroke:none
-    style Title3 fill:none,stroke:none
 ```
 
 ## Learning Goals for the Course
