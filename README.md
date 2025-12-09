@@ -10,7 +10,7 @@ The following section presents the workflow implemented in this project:
 ```mermaid
 flowchart TD
     %% Input
-    A[Dataset GSE55763] --> B[500 CpGs Pv &lt; 0.01 - most correlated with age]
+    A[Dataset GSE55763] --> B[500 CpGs Pv &lt; 0.01, most correlated with age]
 
     %% Machine Learning Modeling
     subgraph ML [Machine Learning Modeling]
@@ -34,6 +34,10 @@ flowchart TD
 
     E --> F
 
+    %% Reports
+    G[Reports: R Markdown, Jupyter Notebook, PDF] 
+    F --> G
+
     %% Styles
     style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
     style ML fill:#ce93d8,stroke:#512da8,stroke-width:2px
@@ -43,6 +47,7 @@ flowchart TD
     style E fill:#b39ddb,stroke:#4527a0,stroke-width:2px
     style Downstream fill:#d1c4e9,stroke:#512da8,stroke-width:2px
     style F fill:#d1c4e9,stroke:#512da8,stroke-width:2px
+    style G fill:#d1c4e9,stroke:#512da8,stroke-width:2px
 ```
 
 ## Learning Goals for the Course
