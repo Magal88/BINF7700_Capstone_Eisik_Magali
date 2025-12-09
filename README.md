@@ -10,14 +10,15 @@ The following section presents the workflow implemented in this project:
 ```mermaid
 flowchart TD
     %% Input
-    A[Dataset GSE55763 (500 CpGs)] --> B
+    A[Dataset GSE55763 - 500 CpGs]
 
     %% Machine Learning Modeling
     subgraph ML [Machine Learning Modeling]
         B[Elastic Net]
         C[Random Forest + SHAP]
     end
-    A --> ML
+    A --> B
+    A --> C
 
     %% Model Performance
     subgraph Eval [Model Performance]
