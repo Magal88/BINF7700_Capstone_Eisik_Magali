@@ -10,37 +10,21 @@ The following section presents the workflow implemented in this project:
 ```mermaid
 flowchart TD
     %% Input
-    A[Dataset GSE55763 - 500 CpGs]
-
-    %% Machine Learning Modeling
-    subgraph ML [Machine Learning Modeling]
-        B[Elastic Net]
-        C[Random Forest + SHAP]
-    end
-    A --> B
-    A --> C
+    A[Dataset GSE55763 - 500 CpGs, most correlated with age, Pv &lt; 0.01] --> B[Elastic Net]
+    A --> C[Random Forest + SHAP]
 
     %% Model Performance
-    subgraph Eval [Model Performance]
-        D[R2, MAE, RMSE]
-    end
-    B --> D
+    B --> D[R2, MAE, RMSE]
     C --> D
 
     %% Downstream Analysis
-    subgraph Downstream [Downstream Analysis KEGG]
-        E[CpG Annotation + KEGG Enrichment]
-    end
-    D --> E
+    D --> E[CpG Annotation + KEGG Enrichment]
 
     %% Styles
     style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
-    style ML fill:#ce93d8,stroke:#512da8,stroke-width:2px
     style B fill:#ce93d8,stroke:#512da8,stroke-width:2px
     style C fill:#ce93d8,stroke:#512da8,stroke-width:2px
-    style Eval fill:#b39ddb,stroke:#4527a0,stroke-width:2px
     style D fill:#b39ddb,stroke:#4527a0,stroke-width:2px
-    style Downstream fill:#d1c4e9,stroke:#512da8,stroke-width:2px
     style E fill:#d1c4e9,stroke:#512da8,stroke-width:2px
 ```
 
