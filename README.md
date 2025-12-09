@@ -18,7 +18,7 @@ flowchart TD
     C --> D
 
     %% Downstream Analysis
-    D --> E[Downstream Analysis (KEGG)]
+    D --> E[Downstream Analysis - KEGG]
 
     %% Styles
     style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
