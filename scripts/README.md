@@ -2,14 +2,10 @@ The scripts/ directory is organized into four subfolders, each representing a sp
 
 1) **data_processing:**
 Cleaning and restructuring of raw GEO and beta-value data, including extraction, formatting, and reading in chunks for initial quality processing.
-
-   Packages: GEOparse, glob, numpy, pandas (Python)
-
-2) **data_preparation:**
 Preparation of cleaned data for modeling.
 Includes feature selection, metadata mapping, M-value conversion, and dataset assembly.
-
-      Packages: dplyr, tidyverse, tibble,tidyr,readr, kableExtra, knitr, ggplot2 (R)
+   Packages: GEOparse, glob, numpy, pandas (Python)
+ Packages: dplyr, tidyverse, tibble,tidyr,readr, kableExtra, knitr, ggplot2 (R)
 
 3) **modeling**
 Training and evaluation of machine-learning models.
