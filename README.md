@@ -10,29 +10,44 @@ The following section presents the workflow implemented in this project:
 ```mermaid
 flowchart TD
     %% Input
-    A[Dataset GSE55763] --> B[500 CpGs Pv &lt; 0.01]
+    subgraph InputSection [Input Data]
+        A[Dataset GSE55763]
+        B[500 CpGs Pv &lt; 0.01]
+        A --> B
+    end
 
     %% Machine Learning Modeling
-    C[Elastic Net] 
-    D[Random Forest + SHAP]
-    B --> C
-    B --> D
+    subgraph MLSection [Machine Learning Modeling]
+        C[Elastic Net]
+        D[Random Forest + SHAP]
+        B --> C
+        B --> D
+    end
 
     %% Model Performance Evaluation
-    E[R2, MAE, RMSE]
-    C --> E
-    D --> E
+    subgraph EvalSection [Model Performance Evaluation]
+        E[R2, MAE, RMSE]
+        C --> E
+        D --> E
+    end
 
     %% Downstream Analysis
-    F[CpG Annotation + KEGG Enrichment]
-    E --> F
+    subgraph DownstreamSection [Downstream Analysis]
+        F[CpG Annotation + KEGG Enrichment]
+        E --> F
+    end
 
     %% Styles
-    style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
-    style B fill:#ce93d8,stroke:#512da8,stroke-width:2px
-    style C fill:#ce93d8,stroke:#512da8,stroke-width:2px
-    style D fill:#ce93d8,stroke:#512da8,stroke-width:2px
-    style E fill:#b39ddb,stroke:#4527a0,stroke-width:2px
+    style InputSection fill:#e1bee7,stroke:#7b1fa2,stroke-width:0px
+    style MLSection fill:#ce93d8,stroke:#512da8,stroke-width:0px
+    style EvalSection fill:#b39ddb,stroke:#4527a0,stroke-width:0px
+    style DownstreamSection fill:#d1c4e9,stroke:#512da8,stroke-width:0px
+
+    style A fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style B fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style C fill:#e1bee7,stroke:#512da8,stroke-width:2px
+    style D fill:#e1bee7,stroke:#512da8,stroke-width:2px
+    style E fill:#ce93d8,stroke:#4527a0,stroke-width:2px
     style F fill:#d1c4e9,stroke:#512da8,stroke-width:2px
 ```
 
