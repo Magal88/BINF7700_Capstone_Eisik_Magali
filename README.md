@@ -9,45 +9,20 @@ The following section presents the workflow implemented in this project:
 
 ```mermaid
 flowchart TD
-    %% Input Data
-    subgraph Input [Input Data]
-        A[Dataset GSE55763]
-    end
-
-    %% Feature selection
-    subgraph FS [Feature Selection]
-        B[500 CpGs - Pv < 0.01]
-    end
-
-    %% Modeling
-    subgraph Modeling [Predictive Modeling]
-        C[Elastic Net]
-        D[Random Forest + SHAP]
-    end
-
-    %% Evaluation
-    subgraph Eval [Model Evaluation]
-        E[Model Comparison -- R2, MAE, RMSE]
-    end
-
-    %% Downstream analysis
-    subgraph Downstream [Downstream Analysis]
-        F[CpG Annotation -- KEGG Pathway Enrichment]
-    end
-
-    %% Connections
-    A --> B
-    B --> C
-    B --> D
-    C --> E
+    A[Dataset GSE55763] --> B[500 CpGs - Pv < 0.01]
+    B --> C[Elastic Net]
+    B --> D[Random Forest + SHAP]
+    C --> E[Model Comparison: R2, MAE, RMSE]
     D --> E
-    E --> F
+    E --> F[CpG Annotation + KEGG Enrichment]
 
     %% Styles
-    style Input fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
-    style FS fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
-    style Modeling fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
-    style Eval fill:#4fc3f7,stroke:#0288d1,stroke-width:2px
+    style A fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
+    style B fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
+    style C fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
+    style D fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
+    style E fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
+    style F fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
 ```
 
 ## Learning Goals for the Course
