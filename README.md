@@ -14,11 +14,11 @@ flowchart TD
     A --> C[Random Forest + SHAP]
 
     %% Model Performance
-    B --> D[R2, MAE, RMSE]
+    B --> D[Metrics: R2, MAE, RMSE]
     C --> D
 
     %% Downstream Analysis
-    D --> E[CpG Annotation + KEGG Enrichment]
+    D --> E[KEGG]
 
     %% Styles
     style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
