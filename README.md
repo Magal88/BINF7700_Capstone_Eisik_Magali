@@ -9,20 +9,40 @@ The following section presents the workflow implemented in this project:
 
 ```mermaid
 flowchart TD
-    A[Dataset GSE55763] --> B[500 CpGs - Pv < 0.01]
-    B --> C[Elastic Net]
-    B --> D[Random Forest + SHAP]
-    C --> E[Model Comparison: R2, MAE, RMSE]
-    D --> E
-    E --> F[CpG Annotation + KEGG Enrichment]
+    %% Input
+    A[Dataset GSE55763] --> B[500 CpGs Pv < 0.01 (most correlated with age)]
+
+    %% Machine Learning Modeling
+    subgraph ML [Machine Learning Modeling]
+        C[Elastic Net] 
+        D[Random Forest + SHAP]
+    end
+
+    B --> ML
+
+    %% Model Performance Evaluation
+    subgraph Eval [Model Performance Evaluation]
+        E[Comparison: R2, MAE, RMSE]
+    end
+
+    ML --> E
+
+    %% Downstream Analysis
+    subgraph Downstream [Downstream Analysis]
+        F[CpG Annotation + KEGG Enrichment]
+    end
+
+    E --> F
 
     %% Styles
-    style A fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
-    style B fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
-    style C fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
-    style D fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
-    style E fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
-    style F fill:#d1c4e9,stroke:#7e57c2,stroke-width:2px
+    style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
+    style ML fill:#ce93d8,stroke:#512da8,stroke-width:2px
+    style C fill:#ce93d8,stroke:#512da8,stroke-width:2px
+    style D fill:#ce93d8,stroke:#512da8,stroke-width:2px
+    style Eval fill:#b39ddb,stroke:#4527a0,stroke-width:2px
+    style E fill:#b39ddb,stroke:#4527a0,stroke-width:2px
+    style Downstream fill:#d1c4e9,stroke:#512da8,stroke-width:2px
+    style F fill:#d1c4e9,stroke:#512da8,stroke-width:2px
 ```
 
 ## Learning Goals for the Course
@@ -85,7 +105,13 @@ Stores raw and processed CSV files.
 
 Stores figures generated during analysis
 
+** Reports**
+
 **Dependencies**
+- R Markdown Files
+- PDF Reports generated from Markdown
+- Jupyter Notebooks
+
 
 **R**
 
@@ -138,7 +164,7 @@ conda activate geo_env
 
 ## First Release
 **Version:** 1.0  
-**Date:** November 2025  
+**Date:** December 2025  
 
 
   
