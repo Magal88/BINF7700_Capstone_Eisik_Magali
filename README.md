@@ -10,7 +10,7 @@ The following section presents the workflow implemented in this project:
 ```mermaid
 flowchart TD
     %% Input
-    A[Dataset GSE55763] --> B[500 CpGs Pv < 0.01 (most correlated with age)]
+    A[Dataset GSE55763] --> B[500 CpGs Pv &lt; 0.01 - most correlated with age]
 
     %% Machine Learning Modeling
     subgraph ML [Machine Learning Modeling]
