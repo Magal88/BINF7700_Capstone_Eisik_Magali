@@ -9,36 +9,38 @@ The following section presents the workflow implemented in this project:
 
 ```mermaid
 flowchart TD
-    %% Nodes
-    A[Dataset GSE55763] --> B[500 CpGs Pv &lt; 0.01]
+    %% Input
+    A[Dataset GSE55763 (500 CpGs)] --> B
 
     %% Machine Learning Modeling
     subgraph ML [Machine Learning Modeling]
-        C[Elastic Net]
-        D[Random Forest + SHAP]
+        B[Elastic Net]
+        C[Random Forest + SHAP]
     end
-    B --> ML
+    A --> ML
 
     %% Model Performance
     subgraph Eval [Model Performance]
-        E[R2, MAE, RMSE]
+        D[R2, MAE, RMSE]
     end
-    C --> E
-    D --> E
+    B --> D
+    C --> D
 
     %% Downstream Analysis
     subgraph Downstream [Downstream Analysis KEGG]
-        F[CpG Annotation + KEGG Enrichment]
+        E[CpG Annotation + KEGG Enrichment]
     end
-    E --> Downstream
+    D --> E
 
     %% Styles
     style A fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px
+    style ML fill:#ce93d8,stroke:#512da8,stroke-width:2px
     style B fill:#ce93d8,stroke:#512da8,stroke-width:2px
     style C fill:#ce93d8,stroke:#512da8,stroke-width:2px
-    style D fill:#ce93d8,stroke:#512da8,stroke-width:2px
-    style E fill:#b39ddb,stroke:#4527a0,stroke-width:2px
-    style F fill:#d1c4e9,stroke:#512da8,stroke-width:2px
+    style Eval fill:#b39ddb,stroke:#4527a0,stroke-width:2px
+    style D fill:#b39ddb,stroke:#4527a0,stroke-width:2px
+    style Downstream fill:#d1c4e9,stroke:#512da8,stroke-width:2px
+    style E fill:#d1c4e9,stroke:#512da8,stroke-width:2px
 ```
 
 ## Learning Goals for the Course
