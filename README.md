@@ -154,3 +154,5 @@ conda activate geo_env
 ## Acknowledgements
 
 **Author:** Magalí Eisik
+
+I would like to thank my advisors, Nabil Atallah, Ph.D. and Oyeronke Ayansola, Ph.D., for their guidance and support throughout this project.
